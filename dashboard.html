@@ -16799,6 +16799,20 @@ Solo especificaciones técnicas clave. Sin precio. Sin emojis. En español argen
         localStorage.setItem('storeapp_orders_' + STORE_ID, JSON.stringify(allOrders));
       } catch(e) {}
 
+      // Detección proactiva de nuevos pedidos entrantes (alerta sonora y visual en mostrador)
+      if (typeof window._prevOrdersSyncedCount === 'number' && allOrders.length > window._prevOrdersSyncedCount) {
+        const newCount = allOrders.length - window._prevOrdersSyncedCount;
+        try {
+          if (typeof NotificationCenter !== 'undefined' && typeof NotificationCenter.playChime === 'function') {
+            NotificationCenter.playChime();
+          }
+        } catch(e) {}
+        if (typeof showToastDash === 'function') {
+          showToastDash(`🔔 ¡${newCount} nuevo${newCount > 1 ? 's' : ''} pedido${newCount > 1 ? 's' : ''} recibido${newCount > 1 ? 's' : ''}!`);
+        }
+      }
+      window._prevOrdersSyncedCount = allOrders.length;
+
       // Actualizar vistas del dashboard
       if (typeof renderAllOrders === 'function') renderAllOrders(allOrders);
       if (typeof renderOrdersTable === 'function') renderOrdersTable(allOrders.slice(0, 10));
@@ -21544,6 +21558,15 @@ Solo especificaciones técnicas clave. Sin precio. Sin emojis. En español argen
     window.addEventListener('focus', () => {
       syncOrdersFromCloudAndStorage();
     });
+
+    // Polling de respaldo cada 15s para recepción en vivo garantizada en tablets y pantallas de mostrador
+    if (!window._ordersSyncInterval) {
+      window._ordersSyncInterval = setInterval(() => {
+        if (!document.hidden) {
+          syncOrdersFromCloudAndStorage();
+        }
+      }, 15000);
+    }
 
     if (window.location.hash && window.location.hash.length > 1) {
       handleUrlHashNavigation();

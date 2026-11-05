@@ -88,3 +88,4 @@ Si tenés dudas, ¡respondé este mensaje y una persona de nuestro equipo te esc
 ## 5. Control de Calidad y Políticas de Meta
 - **Enlace directo limpio:** Se utiliza `https://daletepido.com.ar` sin redirecciones intermedias de Google ni parámetros sospechosos, asegurando alta entregabilidad.
 - **Transparencia proactiva:** Se declara expresamente la naturaleza automatizada del primer mensaje, fortaleciendo la confianza de marca y cumpliendo con las políticas de mensajería responsable de Meta.
+

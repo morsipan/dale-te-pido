@@ -2854,6 +2854,20 @@ function closeNightGuardModal() {
   }, 200);
 }
 
+// ── Sanitización y Normalización Robusta de WhatsApp (Pre-Lanzamiento Producción) ──
+function formatWhatsAppNumber(phone) {
+  if (!phone) return '5491141819344';
+  let clean = String(phone).replace(/\D+/g, '');
+  if (!clean) return '5491141819344';
+  if (clean.startsWith('549')) return clean;
+  if (clean.startsWith('54')) return '549' + clean.slice(2);
+  if (clean.startsWith('0')) clean = clean.slice(1);
+  if (clean.startsWith('15') && clean.length === 10) clean = '11' + clean.slice(2);
+  if (clean.length === 10) return '549' + clean;
+  if (clean.length >= 8 && !clean.startsWith('54')) return '549' + clean;
+  return clean;
+}
+
 function confirmNightGuardOrder() {
   window.SERENO_ORDER_CONFIRMED = true;
   closeNightGuardModal();
@@ -3028,15 +3042,19 @@ async function enviarWhatsApp() {
     }
 
     // ── 3.1 Sincronización Cloud Cifrada para Tablero Kanban & Tracking Multi-Dispositivo ──
-    fetch('/api/auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'sync_order_create',
-        store_id: STORE_ID,
-        order: localOrder
-      })
-    }).catch(err => console.warn('Sync order vault warning:', err));
+    try {
+      await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'sync_order_create',
+          store_id: STORE_ID,
+          order: localOrder
+        })
+      });
+    } catch(vaultErr) {
+      console.warn('Sync order vault warning (non-fatal):', vaultErr);
+    }
 
     // Aplicar descuento de cupón en base de datos si corresponde
     if (window.APPLIED_COUPON && window.STORE_COUPONS) {
@@ -3111,10 +3129,21 @@ async function enviarWhatsApp() {
       `📢 *Novedades por WhatsApp:* ${optInWapp ? '✅ Sí (Aceptó recibir novedades)' : '❌ No'}`,
     ].filter(l=>l!==undefined).join('\n');
 
-    const wappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
-    const opened = window.open(wappUrl, '_blank');
-    if (!opened || opened.closed || typeof opened.closed === 'undefined') {
+    const cleanWappNumber = formatWhatsAppNumber(WHATSAPP_NUMBER);
+    const wappUrl = `https://wa.me/${cleanWappNumber}?text=${encodeURIComponent(msg)}`;
+
+    // Micro-pausa de 120ms para asegurar vaciado de sockets de red y almacenamiento
+    await new Promise(r => setTimeout(r, 120));
+
+    // Redirección blindada para mobile y desktop sin bloqueo de popups
+    const isMobileDevice = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+    if (isMobileDevice) {
       window.location.href = wappUrl;
+    } else {
+      const opened = window.open(wappUrl, '_blank');
+      if (!opened || opened.closed || typeof opened.closed === 'undefined') {
+        window.location.href = wappUrl;
+      }
     }
 
   } catch(err) {
