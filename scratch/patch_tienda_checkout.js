@@ -97,3 +97,4 @@ if (normalize(content).includes(normalize(oldRedir))) {
 
 fs.writeFileSync(path, content, 'utf8');
 console.log('tienda.html updated successfully');
+

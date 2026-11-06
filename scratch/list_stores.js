@@ -8,3 +8,4 @@ async function listStores() {
   console.log('Stores:', await res.json());
 }
 listStores().catch(e => console.error(e));
+

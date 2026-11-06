@@ -30,3 +30,4 @@ Polling continuo cada 15s en \`dashboard.html\` con reproducción de chime polif
 content = content.trimEnd() + '\n' + slide40Md;
 fs.writeFileSync(path, content, 'utf8');
 console.log('presentacion-evolucion-clickapp.md updated with slide 40');
+

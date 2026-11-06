@@ -1345,8 +1345,8 @@ body:not(.light-theme) .stock-chip {
         <label class="form-label" for="f-logistica">Logística *</label>
         <select class="form-control" id="f-logistica" aria-label="Seleccionar método de logística" onchange="toggleDireccion(this.value)">
           <option value="">Seleccioná...</option>
-          <option>Retiro por la tienda</option>
-          <option>Envío a domicilio</option>
+          <option value="Retiro en el local">Retiro en el local</option>
+          <option value="Envío a domicilio">Envío a domicilio (propio)</option>
         </select>
       </div>
       <div class="form-group" id="f-dir-wrap" style="display:none;">
@@ -1382,7 +1382,7 @@ body:not(.light-theme) .stock-chip {
 <div id="dale-pin-modal" style="display:none; position:fixed; inset:0; z-index:999999; background:rgba(1,1,1,0.85); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:16px;">
   <div style="background:#010101; border:1px solid #27272a; border-radius:18px; max-width:440px; width:100%; padding:24px; color:#F6F6F6; font-family:'Poppins',sans-serif; box-shadow:0 12px 40px rgba(0,0,0,0.6); text-align:center; position:relative;">
     <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(246,0,0,0.12); border:1px solid rgba(246,0,0,0.3); color:#F60000; font-size:11px; font-weight:700; padding:4px 12px; border-radius:99px; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:14px;">
-      <i class="bi bi-shield-lock-fill"></i> Entrega Segura Dale!QueVoy
+      <i class="bi bi-shield-lock-fill"></i> Entrega Segura a Domicilio
     </div>
     <h3 style="font-family:'Josefin Sans',sans-serif; font-size:22px; font-weight:800; margin:0 0 8px 0; color:#fff;">¡Tu pedido está en camino!</h3>
     <p style="font-size:13px; color:#a1a1aa; line-height:1.5; margin:0 0 18px 0;">
@@ -2859,12 +2859,40 @@ function formatWhatsAppNumber(phone) {
   if (!phone) return '5491141819344';
   let clean = String(phone).replace(/\D+/g, '');
   if (!clean) return '5491141819344';
-  if (clean.startsWith('549')) return clean;
-  if (clean.startsWith('54')) return '549' + clean.slice(2);
+
+  // 1. Quitar prefijo interurbano '0'
   if (clean.startsWith('0')) clean = clean.slice(1);
-  if (clean.startsWith('15') && clean.length === 10) clean = '11' + clean.slice(2);
-  if (clean.length === 10) return '549' + clean;
-  if (clean.length >= 8 && !clean.startsWith('54')) return '549' + clean;
+
+  // 2. Resolver prefijo celular '15'
+  // Si empieza con 15 y tiene 10 dígitos (asume código de área 11 de AMBA)
+  if (clean.startsWith('15') && clean.length === 10) {
+    clean = '11' + clean.slice(2);
+  }
+  // Si el 15 está después del código de área (ej: 011 15-4982-1133 -> 11 15 49821133)
+  clean = clean.replace(/^(\d{2,4})15(\d{6,8})$/, (m, a, b) => a + b);
+
+  // 3. Manejar prefijo de país 54
+  if (clean.startsWith('54')) {
+    if (clean.startsWith('549')) {
+      let sub = clean.slice(3);
+      sub = sub.replace(/^(\d{2,4})15(\d{6,8})$/, (m, a, b) => a + b);
+      return '549' + sub;
+    }
+    let sub = clean.slice(2);
+    sub = sub.replace(/^(\d{2,4})15(\d{6,8})$/, (m, a, b) => a + b);
+    return '549' + sub;
+  }
+
+  // 4. Si tiene 10 dígitos (número nacional estándar argentino sin prefijo internacional)
+  if (clean.length === 10) {
+    return '549' + clean;
+  }
+
+  // 5. Fallback general: si tiene al menos 8 dígitos y no tiene prefijo 54
+  if (clean.length >= 8 && !clean.startsWith('54')) {
+    return '549' + clean;
+  }
+
   return clean;
 }
 
@@ -2904,7 +2932,7 @@ async function enviarWhatsApp() {
   const optInWapp = document.getElementById('f-optin-wapp') ? document.getElementById('f-optin-wapp').checked : true;
 
   if (!nombre||!dni||!pago||!logis) { showToast('⚠ Completá todos los campos'); return; }
-  if (logis==='Envío a domicilio'&&!dir) { showToast('⚠ Ingresá la dirección de envío'); return; }
+  if ((logis === 'Envío a domicilio' || logis.includes('domicilio')) && !dir) { showToast('⚠ Ingresá la dirección de envío'); return; }
   if (!cart || Object.keys(cart).length === 0) { showToast('⚠ Tu carrito está vacío'); return; }
 
   // Check store schedule status
@@ -2965,7 +2993,7 @@ async function enviarWhatsApp() {
     let totalWeightKg = 0;
     let logisticsInfo = null;
 
-    if (logis === 'Envío a domicilio') {
+    if (logis === 'Envío a domicilio' || logis.includes('domicilio')) {
       if (window.DaleLogistics) {
         logisticsInfo = window.DaleLogistics.calculateOrderMetrics(items, CFG.business_type || CFG.rubro);
         totalWeightKg = logisticsInfo.totalWeightKg;
@@ -2984,7 +3012,7 @@ async function enviarWhatsApp() {
       customer_name: nombre,
       customer_phone: dni,
       customer_address: dir || null,
-      delivery_type: logis === 'Envío a domicilio' ? 'delivery' : 'retiro',
+      delivery_type: (logis === 'Envío a domicilio' || logis.includes('domicilio')) ? 'delivery' : 'retiro',
       items: items,
       total_amount: rawTotal,
       notes: `DNI: ${dni} | Pago: ${pago} | PIN: ${pinCode || '—'} | Opt-in Wapp: ${optInWapp ? 'Sí' : 'No'}`,
@@ -3121,7 +3149,7 @@ async function enviarWhatsApp() {
       `🚚 *Logística:* ${logis}`,
       dir ? `📍 *Dirección:* ${dir}` : '',
       totalWeightKg > 0 ? `⚖️ *Carga aprox:* ${totalWeightKg} kg ${logisticsInfo ? '(' + logisticsInfo.suggestedVehicleIcon + ' ' + logisticsInfo.suggestedVehicle + ')' : ''}` : null,
-      pinCode ? `🔒 *PIN de Recepción Segura:* ${pinCode}\n_(El cliente dictará este PIN de 4 dígitos al repartidor de Dale!QueVoy al recibir su paquete)_` : null,
+      pinCode ? `🔒 *PIN de Recepción Segura:* ${pinCode}\n_(El cliente dictará este PIN de 4 dígitos al repartidor al recibir su paquete)_` : null,
       `🔍 *Seguimiento en vivo:* ${trackingUrl}`,
       ``,
       `👤 *Cliente:* ${nombre}`,

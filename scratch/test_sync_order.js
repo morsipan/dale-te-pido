@@ -27,3 +27,4 @@ async function testSyncOrder() {
 }
 
 testSyncOrder().catch(e => console.log('Fetch error:', e.message));
+

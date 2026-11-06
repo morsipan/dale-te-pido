@@ -64,3 +64,4 @@ async function checkColumns() {
 }
 
 checkColumns().catch(e => console.error(e));
+
