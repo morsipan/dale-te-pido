@@ -58,3 +58,4 @@ content = content.replace(
 
 fs.writeFileSync(path, content, 'utf8');
 console.log('tienda.html logistics and hidden modales patched successfully');
+

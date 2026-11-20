@@ -919,3 +919,27 @@ Normalización automática de números argentinos (`+549...`, remoción de `0` y
 Polling continuo cada 15s en `dashboard.html` con reproducción de chime polifónico Web Audio API y aviso toast al detectar nuevos pedidos entrantes, eliminando la necesidad de recargas manuales por parte del comerciante.
 
 ---
+
+---
+
+## Diapositiva 41: Consolidación de Arquitectura de Datos: Script SQL Maestro & Políticas RLS de Seguridad
+
+> **Hito / Estado:** Etapa 41 · Release 20 de Noviembre 2026
+
+Unificación exhaustiva de 25 migraciones previas en un único script SQL maestro (`schema_maestro_clickapp.sql`) idempotente, con aislamiento estricto de credenciales en `store_auth`, RLS blindado contra BOLA/IDOR y pausa estratégica de Dale!QueVoy.
+
+### Componentes e Innovaciones Implementadas:
+
+#### Unificación & Normalización Multirubro
+Consolidación de tablas operativas: `stores`, `company_settings`, `categories`, `products`, `pickups`, `orders`, `order_items`, `faqs`, `reviews` y `email_templates` con claves foráneas e integridad referencial en cascada (`ON DELETE CASCADE`).
+
+#### Políticas RLS Granulares & Zero-Read Insert
+Catálogo de lectura pública para storefront sin fricción de login para el cliente. En `orders`, permiso de inserción anónima con restricción estricta de lectura (`Prefer: return=minimal`), eliminando scraping de clientes y vulnerabilidades BOLA/IDOR.
+
+#### Aislamiento Criptográfico de Credenciales
+Separación física de contraseñas y tokens en `store_auth` y `store_credentials`. Hash `salt:sha256` gestionado por funciones RPC seguras (`verify_store_login`, `reset_store_password`, `verify_store_token`) y revocación total (`REVOKE ALL`) a roles anónimos.
+
+#### Delimitación Estratégica Dale!QueVoy
+Demarcación formal de tablas de cadetería y logística compartida (`merchants`, `deliveries`) como infraestructura en pausa técnica, asegurando que el despliegue del catálogo y comanda de Dale!TePido opere de forma limpia y desacoplada.
+
+---

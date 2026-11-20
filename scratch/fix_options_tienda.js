@@ -15,3 +15,4 @@ content = content.replace(
 
 fs.writeFileSync(path, content, 'utf8');
 console.log('Options updated in tienda.html');
+

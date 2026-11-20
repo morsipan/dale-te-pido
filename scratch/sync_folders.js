@@ -39,6 +39,8 @@ const filesToSync = [
   'src/services/logistics.js',
   'src/lib/dispatchDelivery.js',
   'supabase_multirubro_schema.sql',
+  'schema_maestro_clickapp.sql',
+  'presentacion-evolucion-clickapp.md',
   'enviar-comprobante.html',
   'api/email-templates.js',
   'manifest.json',

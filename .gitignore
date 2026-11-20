@@ -4,6 +4,7 @@ package-lock.json
 *Clave*
 *.txt
 scratch/lighthouse*
+.env*
 .env
 .env.local
 Clickapp/

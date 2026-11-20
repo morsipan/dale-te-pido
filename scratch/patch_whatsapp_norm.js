@@ -66,3 +66,4 @@ if (content.includes(targetFn)) {
 } else {
   console.error('targetFn not found in tienda.html');
 }
+
