@@ -2327,15 +2327,40 @@ async function loadSheet() {
 
         if (p.variants) {
           try {
-            const parsedOpts = typeof p.variants === 'string' ? JSON.parse(p.variants) : p.variants;
-            if (parsedOpts.variants) variants = parsedOpts.variants;
-            if (parsedOpts.modifiers) modifiers = parsedOpts.modifiers;
-            if (parsedOpts.video_url && !video_url) video_url = parsedOpts.video_url;
-            if (parsedOpts.price_prev && !price_prev) price_prev = parseFloat(parsedOpts.price_prev);
-            if (parsedOpts.precio_anterior && !price_prev) price_prev = parseFloat(parsedOpts.precio_anterior);
-            if (parsedOpts.discount_pct && !discount_pct) discount_pct = parseFloat(parsedOpts.discount_pct);
+            let parsedOpts = null;
+            if (typeof p.variants === 'string') {
+              const str = p.variants.trim();
+              if (str.startsWith('{') || str.startsWith('[')) {
+                parsedOpts = JSON.parse(str);
+              } else if (str.length > 0) {
+                const opts = str.split(',').map(s => s.trim()).filter(Boolean).map(optStr => {
+                  const parts = optStr.split(':');
+                  const name = parts[0].trim();
+                  const priceDelta = parts[1] ? parseFloat(parts[1].replace('+', '')) || 0 : 0;
+                  return { name, priceDelta };
+                });
+                if (opts.length > 0) {
+                  variants = [{
+                    name: str.toLowerCase().includes('mediana') || str.toLowerCase().includes('grande') ? 'Tamaño' : 'Opción',
+                    options: opts
+                  }];
+                }
+              }
+            } else if (typeof p.variants === 'object' && p.variants !== null) {
+              parsedOpts = p.variants;
+            }
+
+            if (parsedOpts) {
+              if (Array.isArray(parsedOpts)) variants = parsedOpts;
+              else if (parsedOpts.variants) variants = parsedOpts.variants;
+              if (parsedOpts.modifiers) modifiers = parsedOpts.modifiers;
+              if (parsedOpts.video_url && !video_url) video_url = parsedOpts.video_url;
+              if (parsedOpts.price_prev && !price_prev) price_prev = parseFloat(parsedOpts.price_prev);
+              if (parsedOpts.precio_anterior && !price_prev) price_prev = parseFloat(parsedOpts.precio_anterior);
+              if (parsedOpts.discount_pct && !discount_pct) discount_pct = parseFloat(parsedOpts.discount_pct);
+            }
           } catch (e) {
-            console.error("Error parsing JSON variants in tienda load:", e);
+            console.warn("Aviso al parsear variantes:", e);
           }
         } else if (rawDetalles.includes('|||')) {
           const parts = rawDetalles.split('|||');
