@@ -943,3 +943,27 @@ Separación física de contraseñas y tokens en `store_auth` y `store_credential
 Demarcación formal de tablas de cadetería y logística compartida (`merchants`, `deliveries`) como infraestructura en pausa técnica, asegurando que el despliegue del catálogo y comanda de Dale!TePido opere de forma limpia y desacoplada.
 
 ---
+
+---
+
+## Diapositiva 42: Fix Integral de Íconos, Migración de Endpoints Supabase & Bucket Público de Assets
+
+> **Hito / Estado:** Etapa 42 · Release 20 de Noviembre 2026
+
+Diagnóstico y resolución definitiva de la carga de íconos en tiendas tras migrar a la nueva cuenta de Supabase (`odmwquntubniqbvkecna`): eliminación de referencias residuales, carga síncrona de Bootstrap Icons, íconos de categorías y esquema completo.
+
+### Componentes e Innovaciones Implementadas:
+
+#### Migración Total de Endpoints & Auto-Limpieza
+Actualización de `api/store.js`, `api/auth.js`, `api/super-admin.js`, `api/security.js`, `tienda.html`, `dashboard.html` y páginas públicas al nuevo proyecto Supabase, con purga automática de `localStorage` antiguo y bump de Service Worker (`v19`).
+
+#### Carga Garantizada de Bootstrap Icons & Categorías
+Eliminación del atributo `media="print"` en `bootstrap-icons.min.css` de `tienda.html`, integración de emojis desde `public.categories` en el carril de categorías y fallback `onerror` automático en logos de tienda.
+
+#### Compatibilidad Supabase Storage Plan Free
+Corrección de `optimizeImg()` para servir directamente `/storage/v1/object/public/` sin reescribir a `/render/image/public/` (exclusivo Pro), evitando errores 403/404 en logos y fotos.
+
+#### Script SQL `supabase_fix_icons_and_schema.sql`
+Incorporación de columnas faltantes (`emoji`, branding, redes, banners, pagos) en `company_settings`, normalización de íconos por defecto y creación del bucket público `store-assets` con políticas RLS.
+
+---

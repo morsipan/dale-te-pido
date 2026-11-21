@@ -187,6 +187,7 @@ export function validateReceiptUrl(url) {
     // Solo permitir hosts de CDN autorizados (Cloudinary o Supabase Storage de la plataforma)
     const allowedHosts = [
       'res.cloudinary.com',
+      'odmwquntubniqbvkecna.supabase.co',
       'iaylgsthwildjkiiwgfd.supabase.co',
       'images.unsplash.com'
     ];

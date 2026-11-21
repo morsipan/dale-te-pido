@@ -256,7 +256,7 @@
       <div class="diag-item">
         <div>
           <strong>Base de Datos Supabase PostgreSQL</strong>
-          <div style="font-size: 12px; color: var(--text-muted);" id="diag-db-url">https://iaylgsthwildjkiiwgfd.supabase.co</div>
+          <div style="font-size: 12px; color: var(--text-muted);" id="diag-db-url">https://odmwquntubniqbvkecna.supabase.co</div>
         </div>
         <span class="badge-ok" id="badge-db">🟢 Conectado</span>
       </div>
@@ -394,7 +394,7 @@
         const data = await res.json();
         if (data.success && data.credentials) {
           const c = data.credentials;
-          document.getElementById('cfg-supabase-url').value = c.supabase_url || 'https://iaylgsthwildjkiiwgfd.supabase.co';
+          document.getElementById('cfg-supabase-url').value = c.supabase_url || 'https://odmwquntubniqbvkecna.supabase.co';
           document.getElementById('cfg-supabase-key').value = c.supabase_key || '';
           document.getElementById('cfg-cloudinary-name').value = c.cloudinary_name || 'deuog0r34';
           document.getElementById('cfg-cloudinary-preset').value = c.cloudinary_preset || 'clickapp';
@@ -403,7 +403,7 @@
           document.getElementById('cfg-claude-key').value = c.claude_key || '';
           if (c.default_trial_days) document.getElementById('cfg-trial-days').value = c.default_trial_days;
 
-          document.getElementById('diag-db-url').textContent = c.supabase_url || 'https://iaylgsthwildjkiiwgfd.supabase.co';
+          document.getElementById('diag-db-url').textContent = c.supabase_url || 'https://odmwquntubniqbvkecna.supabase.co';
           document.getElementById('diag-cloud-name').textContent = (c.cloudinary_name || 'deuog0r34') + ' (Cloudinary)';
           document.getElementById('diag-ai-svc').textContent = (c.ai_provider === 'claude') ? 'Anthropic Claude AI (Claude Haiku 4.5)' : 'Google Gemini AI (Gemini 2.5 Flash)';
         }

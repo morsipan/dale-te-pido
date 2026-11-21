@@ -45,14 +45,10 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="preconnect" href="https://iaylgsthwildjkiiwgfd.supabase.co" crossorigin />
+<link rel="preconnect" href="https://odmwquntubniqbvkecna.supabase.co" crossorigin />
 <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="preconnect" href="https://iaylgsthwildjkiiwgfd.supabase.co" crossorigin />
-<link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Josefin+Sans:ital,wght@0,300..700;1,300..700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet" media="print" onload="this.media='all'"/>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" media="print" onload="this.media='all'"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Josefin+Sans:ital,wght@0,300..700;1,300..700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
 
 <style>
 /* ── WARM MINIMALIST SAAS TOKENS ─────────────────────────────────────── */
@@ -1425,12 +1421,13 @@ body:not(.light-theme) .stock-chip {
 
 <script>
 /* ═══════════════════════════════════════════ SUPABASE CONFIG */
-const DEFAULT_SUPABASE_URL = 'https://iaylgsthwildjkiiwgfd.supabase.co';
-const DEFAULT_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlheWxnc3Rod2lsZGpraWl3Z2ZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyOTQwODksImV4cCI6MjA5Mzg3MDA4OX0.4aysjORaQ_158r9CFgLSkcqmwpHFXsxZ9T18jEMF6z4';
+const DEFAULT_SUPABASE_URL = 'https://odmwquntubniqbvkecna.supabase.co';
+const DEFAULT_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kbXdxdW50dWJuaXFidmtlY25hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyMDc3MTIsImV4cCI6MjExMDc4MzcxMn0.ufqUPmbLFEgHZSuSG7C-a4nOKvIhuTFZGliqBL0Srd4';
 
 let rawSupabaseUrl = localStorage.getItem('storeapp_supabase_url');
-if (rawSupabaseUrl && !rawSupabaseUrl.startsWith('http')) {
+if (rawSupabaseUrl && (!rawSupabaseUrl.startsWith('http') || rawSupabaseUrl.includes('iaylgsthwildjkiiwgfd.supabase.co'))) {
   localStorage.removeItem('storeapp_supabase_url');
+  localStorage.removeItem('storeapp_supabase_key');
   rawSupabaseUrl = null;
 }
 let rawSupabaseKey = localStorage.getItem('storeapp_supabase_key');
@@ -1631,11 +1628,9 @@ function optimizeImg(url, width = null, height = null) {
     }
   }
 
-  // 3. Supabase Storage (renderizado optimizado de imágenes si está disponible)
+  // 3. Supabase Storage: servir directamente /object/public/ (evita 403/404 en plan Free sin Image Transformations)
   if (url.includes('.supabase.co/storage/v1/object/public/')) {
-    if (!url.includes('?width=') && width) {
-      return url.replace('/object/public/', '/render/image/public/') + `?width=${width}&quality=80&format=webp`;
-    }
+    return url;
   }
 
   return url;
@@ -1714,13 +1709,20 @@ function applyConfig() {
 
   if (CFG.logo) {
     if (logoImg) {
+      logoImg.onerror = function() {
+        this.style.display = 'none';
+        if (logoIcon) {
+          logoIcon.textContent = CFG.emoji || '🏪';
+          logoIcon.style.display = 'flex';
+        }
+      };
       logoImg.src = optimizeImg(CFG.logo, 80, 80);
       logoImg.style.display = 'block';
     }
     if (logoIcon) logoIcon.style.display = 'none';
   } else {
     if (logoIcon) {
-      logoIcon.textContent = CFG.emoji || '🍔';
+      logoIcon.textContent = CFG.emoji || '🏪';
       logoIcon.style.display = 'flex';
     }
     if (logoImg) logoImg.style.display = 'none';
@@ -2156,12 +2158,33 @@ async function loadSheet() {
     
     // Eliminado override de localStorage para que traccione siempre directo desde la nube (Supabase)
 
-    // Build category rail
+    // Build category rail (con íconos/emojis desde tabla categories + fallback inteligente)
+    const catEmojiMap = {};
+    try {
+      const catRes = await fetchSupabase(`/rest/v1/categories?store_id=eq.${encodeURIComponent(STORE_ID)}&active=eq.true&order=display_order.asc`);
+      if (catRes.ok) {
+        const fetchedCats = await catRes.json();
+        if (Array.isArray(fetchedCats)) {
+          fetchedCats.forEach(item => {
+            if (item && item.name && item.emoji) {
+              catEmojiMap[String(item.name).trim().toLowerCase()] = item.emoji;
+            }
+          });
+        }
+      }
+    } catch (e) {
+      console.warn('Advertencia al obtener íconos de categorías:', e);
+    }
+
     const cats = [...new Set(products.map(p => p.cat).filter(Boolean))];
     const rail = document.getElementById('cat-rail');
     rail.innerHTML = `<button class="cat-btn active" data-cat="all" onclick="filterCat(this,'all')">
       <i class="bi bi-grid-3x3-gap"></i> Todos</button>` +
-      cats.map(c => `<button class="cat-btn" data-cat="${c}" onclick="filterCat(this,'${c}')">${c}</button>`).join('');
+      cats.map(c => {
+        const cEmoji = catEmojiMap[String(c).trim().toLowerCase()] || guessEmoji(c, c) || '';
+        const label = cEmoji && !String(c).startsWith(cEmoji) ? `${cEmoji} ${escapeHTML(c)}` : escapeHTML(c);
+        return `<button class="cat-btn" data-cat="${escapeHTML(c)}" onclick='filterCat(this,${JSON.stringify(c)})'>${label}</button>`;
+      }).join('');
 
     // ← NUEVO: Renderizar banners
     renderBanners(bannerData);
@@ -3929,13 +3952,20 @@ function applyStoredConfig() {
     }
 
     if (logoImg) {
+      logoImgEl.onerror = function() {
+        this.style.display = 'none';
+        if (logoIconEl) {
+          logoIconEl.textContent = cfg.emoji || '🏪';
+          logoIconEl.style.display = 'flex';
+        }
+      };
       logoImgEl.src = optimizeImg(logoImg, 80, 80);
       logoImgEl.style.display = 'block';
       if (logoIconEl) logoIconEl.style.display = 'none';
     } else {
       logoImgEl.style.display = 'none';
       if (logoIconEl) {
-        logoIconEl.textContent = cfg.emoji || '🍔';
+        logoIconEl.textContent = cfg.emoji || '🏪';
         logoIconEl.style.display = 'flex';
       }
     }

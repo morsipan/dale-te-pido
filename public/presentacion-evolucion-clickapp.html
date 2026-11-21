@@ -2349,6 +2349,44 @@
         </div>
       </section>
 
+
+          <!-- SLIDE 42: FIX DE ÍCONOS & MIGRACIÓN INTEGRAL AL NUEVO SUPABASE -->
+      <section class="slide" id="slide-42">
+        <span class="slide-badge" style="background:rgba(16,185,129,0.15);border-color:rgba(16,185,129,0.4);color:#10B981;"><i class="bi bi-stars"></i> Etapa 42 · Release 20 de Noviembre 2026</span>
+        <h2 class="slide-title">Fix Integral de Íconos, Migración de Endpoints Supabase & Bucket Público de Assets</h2>
+        <p class="slide-desc">Diagnóstico y resolución definitiva de la carga de íconos en tiendas tras migrar a la nueva cuenta de Supabase (<code>odmwquntubniqbvkecna</code>): eliminación de referencias residuales, carga síncrona de Bootstrap Icons, íconos de categorías y esquema completo.</p>
+
+        <div class="grid-2" style="margin-top:16px; display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+          <div class="card">
+            <div class="card-title" style="color:#6366F1;"><i class="bi bi-database-fill-gear"></i> Migración Total de Endpoints & Auto-Limpieza</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Actualización de <code>api/store.js</code>, <code>api/auth.js</code>, <code>api/super-admin.js</code>, <code>api/security.js</code>, <code>tienda.html</code>, <code>dashboard.html</code> y páginas públicas al nuevo proyecto Supabase, con purga automática de <code>localStorage</code> antiguo y bump de Service Worker (<code>v19</code>).
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#10B981;"><i class="bi bi-bootstrap-fill"></i> Carga Garantizada de Bootstrap Icons & Categorías</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Eliminación del atributo <code>media="print"</code> en <code>bootstrap-icons.min.css</code> de <code>tienda.html</code>, integración de emojis desde <code>public.categories</code> en el carril de categorías y fallback <code>onerror</code> automático en logos de tienda.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#F59E0B;"><i class="bi bi-images"></i> Compatibilidad Supabase Storage Plan Free</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Corrección de <code>optimizeImg()</code> para servir directamente <code>/storage/v1/object/public/</code> sin reescribir a <code>/render/image/public/</code> (exclusivo Pro), evitando errores 403/404 en logos y fotos.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#EF4444;"><i class="bi bi-file-earmark-code-fill"></i> Script SQL <code>supabase_fix_icons_and_schema.sql</code></div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Incorporación de columnas faltantes (<code>emoji</code>, branding, redes, banners, pagos) en <code>company_settings</code>, normalización de íconos por defecto y creación del bucket público <code>store-assets</code> con políticas RLS.
+            </p>
+          </div>
+        </div>
+      </section>
+
     </main>
 
     <!-- BOTTOMBAR -->
@@ -2360,7 +2398,7 @@
         <div class="progress-fill" id="progress-fill"></div>
       </div>
       <div>
-        Dale! Te Pido © 2026 · Versión 4.24 Schema Maestro Consolidado & RLS · Actualizado 20/11/2026
+        Dale! Te Pido © 2026 · Versión 4.25 Fix Íconos & Migración Supabase · Actualizado 20/11/2026
       </div>
     </footer>
 
@@ -2369,7 +2407,7 @@
 
 <script>
   let currentSlide = 1;
-  const totalSlides = 41;
+  const totalSlides = 42;
 
   function showSlide(index) {
     if (index < 1) index = 1;

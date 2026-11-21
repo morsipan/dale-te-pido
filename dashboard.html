@@ -10221,11 +10221,12 @@
     window.requestUpgrade = requestUpgrade;
 
     /* ════════════════════════════════════════════ SUPABASE CONFIG */
-    const VALID_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlheWxnc3Rod2lsZGpraWl3Z2ZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyOTQwODksImV4cCI6MjA5Mzg3MDA4OX0.4aysjORaQ_158r9CFgLSkcqmwpHFXsxZ9T18jEMF6z4';
+    const VALID_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kbXdxdW50dWJuaXFidmtlY25hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyMDc3MTIsImV4cCI6MjExMDc4MzcxMn0.ufqUPmbLFEgHZSuSG7C-a4nOKvIhuTFZGliqBL0Srd4';
 
     let rawSupabaseUrl = window.localStorage.getItem('storeapp_supabase_url');
-    if (rawSupabaseUrl && !rawSupabaseUrl.startsWith('http')) {
+    if (rawSupabaseUrl && (!rawSupabaseUrl.startsWith('http') || rawSupabaseUrl.includes('iaylgsthwildjkiiwgfd.supabase.co'))) {
       window.localStorage.removeItem('storeapp_supabase_url');
+      window.localStorage.removeItem('storeapp_supabase_key');
       rawSupabaseUrl = null;
     }
     let rawSupabaseKey = window.localStorage.getItem('storeapp_supabase_key');
@@ -10233,12 +10234,12 @@
       window.localStorage.removeItem('storeapp_supabase_key');
       rawSupabaseKey = null;
     }
-    if ((!rawSupabaseUrl || rawSupabaseUrl === 'https://iaylgsthwildjkiiwgfd.supabase.co') && rawSupabaseKey && rawSupabaseKey !== VALID_ANON_KEY) {
+    if ((!rawSupabaseUrl || rawSupabaseUrl === 'https://odmwquntubniqbvkecna.supabase.co') && rawSupabaseKey && rawSupabaseKey !== VALID_ANON_KEY) {
       window.localStorage.removeItem('storeapp_supabase_key');
       rawSupabaseKey = null;
     }
 
-    let SUPABASE_URL = rawSupabaseUrl || 'https://iaylgsthwildjkiiwgfd.supabase.co';
+    let SUPABASE_URL = rawSupabaseUrl || 'https://odmwquntubniqbvkecna.supabase.co';
     let SUPABASE_KEY = rawSupabaseKey || VALID_ANON_KEY;
 
     // Obtener store_id del parámetro de URL '?store=...' o del subdominio de hostname o localStorage o 'ferre-now' por defecto
