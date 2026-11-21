@@ -1138,6 +1138,131 @@ body:not(.light-theme) .stock-chip {
     display: none;
   }
 }
+
+/* ── MOBILE FLOATING CART BAR ── */
+.mobile-cart-bar {
+  position: fixed;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  left: 16px;
+  right: 16px;
+  max-width: 480px;
+  margin: 0 auto;
+  height: 54px;
+  background: #09090b;
+  color: #FFFFFF;
+  border-radius: 999px;
+  padding: 0 16px 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 150;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, opacity 0.2s ease;
+  user-select: none;
+  animation: mcbSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+.mobile-cart-bar:active {
+  transform: scale(0.97);
+}
+@keyframes mcbSlideUp {
+  from {
+    transform: translateY(80px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.mcb-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.mcb-icon-wrap {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--red, #F60000);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(246, 0, 0, 0.4);
+}
+.mcb-badge {
+  position: absolute;
+  top: -4px;
+  right: -5px;
+  background: #FFFFFF;
+  color: #09090b;
+  font-size: 11px;
+  font-weight: 800;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.mcb-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.mcb-label {
+  font-size: 10.5px;
+  color: #A1A1AA;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.mcb-total {
+  font-size: 15px;
+  font-weight: 800;
+  color: #FFFFFF;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+.mcb-action {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #FFFFFF;
+  transition: background 0.15s ease;
+}
+.mcb-action i {
+  font-size: 14px;
+  transition: transform 0.2s ease;
+}
+.mobile-cart-bar:hover .mcb-action i {
+  transform: translateX(3px);
+}
+@media (min-width: 769px) {
+  .mobile-cart-bar {
+    display: none !important;
+  }
+}
+@media (max-width: 768px) {
+  .grid {
+    padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1300,6 +1425,25 @@ body:not(.light-theme) .stock-chip {
   
   <span style="opacity:.75;">Creado por <a href="https://daletepido.com.ar" target="_blank">DaleTepido</a></span>
 </footer>
+
+
+<!-- ── MOBILE FLOATING CART BAR ── -->
+<div id="mobile-cart-bar" class="mobile-cart-bar" onclick="openCart()" onkeydown="if(event.key==='Enter'||event.key===' ')openCart()" style="display:none;" aria-label="Ver carrito de compras" role="button" tabindex="0">
+  <div class="mcb-left">
+    <div class="mcb-icon-wrap">
+      <i class="bi bi-bag-fill" aria-hidden="true"></i>
+      <span class="mcb-badge" id="mcb-qty">0</span>
+    </div>
+    <div class="mcb-info">
+      <span class="mcb-label">Tu Pedido</span>
+      <span class="mcb-total" id="mcb-total">$0</span>
+    </div>
+  </div>
+  <div class="mcb-action">
+    <span>Ver Carrito</span>
+    <i class="bi bi-arrow-right" aria-hidden="true"></i>
+  </div>
+</div>
 
 <!-- ── CART DRAWER ── -->
 <div class="drawer-overlay" id="overlay" onclick="closeCart()"></div>
@@ -2680,6 +2824,23 @@ function updateCartUI() {
     .join(' + ') || '$0';
   document.getElementById('total-val').textContent = t;
   document.getElementById('total-val-2').textContent = t;
+
+  // Sincronización reactiva del Carrito Flotante Mobile
+  const mcb = document.getElementById('mobile-cart-bar');
+  if (mcb) {
+    const mcbQty = document.getElementById('mcb-qty');
+    const mcbTotal = document.getElementById('mcb-total');
+    if (mcbQty) mcbQty.textContent = qty;
+    if (mcbTotal) mcbTotal.textContent = t;
+    if (qty > 0) {
+      if (mcb.style.display !== 'flex') {
+        mcb.style.display = 'flex';
+      }
+      mcb.style.opacity = '1';
+    } else {
+      mcb.style.display = 'none';
+    }
+  }
 }
 
 function renderDrawer() {
@@ -2714,12 +2875,16 @@ function openCart() {
   document.getElementById('drawer').classList.add('open');
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+  const mcb = document.getElementById('mobile-cart-bar');
+  if (mcb) mcb.style.opacity = '0';
 }
 function closeCart() {
   document.getElementById('drawer').classList.remove('open');
   document.getElementById('overlay').classList.remove('open');
   document.body.style.overflow = '';
   hideCheckout();
+  const mcb = document.getElementById('mobile-cart-bar');
+  if (mcb && cartQty() > 0) mcb.style.opacity = '1';
 }
 
 function showCheckout() {

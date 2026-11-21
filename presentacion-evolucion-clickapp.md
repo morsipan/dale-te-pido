@@ -991,3 +991,27 @@ Toda tarjeta con productos en el carrito adquiere la clase `.in-cart` con borde 
 Efecto de salto elástico (`scale(1.22)`) sobre los números centrales en tipografía tabular (`tabular-nums`) junto a pulsos hápticos ligeros (`vibrate(15ms)`), garantizando respuesta táctil instantánea y táctil en Android e iOS.
 
 ---
+
+---
+
+## Diapositiva 44: Canasta y Carrito Flotante Persistente en Vista Mobile (Storefront)
+
+> **Hito / Estado:** Etapa 44 · Release 20 de Noviembre 2026
+
+Barra flotante inferior de alto contraste exclusiva para smartphones (<=768px) que emerge automáticamente al agregar el primer producto (`cantidad >= 1`), permitiendo visualizar unidades, importe acumulado y acceder al checkout en 1 toque sin hacer scroll hacia arriba.
+
+### Componentes e Innovaciones Implementadas:
+
+#### Activación Dinámica y Zero-Clutter
+Permanece 100% oculto con `0` productos para una navegación limpia. Al sumar un ítem, emerge con micro-animación ascendente (`mcbSlideUp`) y permanece fijo al desplazarse por el catálogo, resolviendo la fricción de compra en mobile.
+
+#### Jerarquía Z-Index & Safe-Area Inset
+Ubicado estratégicamente en `z-index: 150` (sobre las tarjetas de catálogo pero subordinado a modales y al drawer en 200+). Incorpora soporte para `env(safe-area-inset-bottom)` y espacio de reserva en la grilla (`padding-bottom: 84px`) para no tapar el último producto.
+
+#### Alto Contraste & Tokens Dale!TePido
+Cápsula elegante de 54px con acabado obsidiana (`#09090b`), ícono de bolsa de compras sobre acento rojo (`#F60000`), contador de unidades en tipografía tabular (`tabular-nums`) e indicador de total en tiempo real.
+
+#### Sincronización Reactiva Bidireccional
+Integrado nativamente con `updateCartUI()`, `openCart()` y `closeCart()`. Responde en tiempo real a modificaciones de cantidad desde tarjetas o desde el drawer, auto-ocultándose si el carrito vuelve a cero.
+
+---

@@ -2425,6 +2425,44 @@
         </div>
       </section>
 
+    
+      <!-- SLIDE 44: CARRITO / CANASTA FLOTANTE EN VISTA MOBILE -->
+      <section class="slide" id="slide-44">
+        <span class="slide-badge" style="background:rgba(239,68,68,0.15);border-color:rgba(239,68,68,0.4);color:#EF4444;"><i class="bi bi-bag-check-fill"></i> Etapa 44 · Release 20 de Noviembre 2026</span>
+        <h2 class="slide-title">Canasta y Carrito Flotante Persistente en Vista Mobile (Storefront)</h2>
+        <p class="slide-desc">Barra flotante inferior de alto contraste exclusiva para smartphones (&lt;=768px) que emerge automáticamente al agregar el primer producto, permitiendo visualizar unidades, importe acumulado y acceder al checkout en 1 toque sin hacer scroll hacia arriba.</p>
+
+        <div class="grid-2" style="margin-top:16px; display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+          <div class="card">
+            <div class="card-title" style="color:#EF4444;"><i class="bi bi-phone"></i> Activación Dinámica y Zero-Clutter</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Permanece 100% oculto con <code>0</code> productos para una navegación limpia. Al sumar un ítem, emerge con micro-animación ascendente (<code>mcbSlideUp</code>) y permanece fijo al desplazarse por el catálogo, resolviendo la pérdida de prospectos en mobile.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#10B981;"><i class="bi bi-layers-fill"></i> Jerarquía Z-Index & Safe-Area Inset</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Ubicado estratégicamente en <code>z-index: 150</code> (sobre las tarjetas de catálogo pero subordinado a modales y al drawer en 200+). Incorpora soporte para <code>env(safe-area-inset-bottom)</code> y espacio de reserva en la grilla para no tapar el último producto.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#3B82F6;"><i class="bi bi-palette2"></i> Alto Contraste & Tokens Dale!TePido</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Cápsula elegante de 54px con acabado obsidiana (<code>#09090b</code>), ícono de bolsa de compras sobre acento rojo (<code>#F60000</code>), contador de unidades en tipografía tabular (<code>tabular-nums</code>) e indicador de total en tiempo real.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#F59E0B;"><i class="bi bi-arrow-repeat"></i> Sincronización Reactiva Bidireccional</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Integrado nativamente con <code>updateCartUI()</code>, <code>openCart()</code> y <code>closeCart()</code>. Responde en tiempo real a modificaciones de cantidad desde tarjetas o desde el drawer, auto-ocultándose si el carrito vuelve a cero.
+            </p>
+          </div>
+        </div>
+      </section>
+
     </main>
 
     <!-- BOTTOMBAR -->
@@ -2436,7 +2474,7 @@
         <div class="progress-fill" id="progress-fill"></div>
       </div>
       <div>
-        Dale! Te Pido © 2026 · Versión 4.26 Stepper Persistente Catálogo · Actualizado 20/11/2026
+        Dale! Te Pido © 2026 · Versión 4.27 Carrito Flotante Mobile · Actualizado 20/11/2026
       </div>
     </footer>
 
@@ -2445,7 +2483,7 @@
 
 <script>
   let currentSlide = 1;
-  const totalSlides = 43;
+  const totalSlides = 44;
 
   function showSlide(index) {
     if (index < 1) index = 1;
