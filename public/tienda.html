@@ -1252,10 +1252,27 @@ body:not(.light-theme) .stock-chip {
 .mobile-cart-bar:hover .mcb-action i {
   transform: translateX(3px);
 }
+/* Responsive Floating Cart: Bottom bar on mobile, floating corner pill on desktop */
 @media (min-width: 769px) {
   .mobile-cart-bar {
-    display: none !important;
+    left: auto !important;
+    right: 24px !important;
+    bottom: 24px !important;
+    max-width: 380px !important;
+    min-width: 280px !important;
+    margin: 0 !important;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.15) !important;
   }
+}
+@keyframes mcbBounce {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.08); }
+  50% { transform: scale(0.96); }
+  75% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+.mobile-cart-bar.bounce {
+  animation: mcbBounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 @media (max-width: 768px) {
   .grid {
@@ -2531,6 +2548,7 @@ function render() {
       </div>
     </div>`;
   }).join('');
+  updateCartUI();
 }
 
 /* ═══════════════════════════════════════════ FILTERS */
@@ -2825,11 +2843,12 @@ function updateCartUI() {
   document.getElementById('total-val').textContent = t;
   document.getElementById('total-val-2').textContent = t;
 
-  // Sincronización reactiva del Carrito Flotante Mobile
+  // Sincronización reactiva del Carrito Flotante (Mobile & Desktop)
   const mcb = document.getElementById('mobile-cart-bar');
   if (mcb) {
     const mcbQty = document.getElementById('mcb-qty');
     const mcbTotal = document.getElementById('mcb-total');
+    const prevQty = parseInt(mcbQty?.textContent || '0', 10);
     if (mcbQty) mcbQty.textContent = qty;
     if (mcbTotal) mcbTotal.textContent = t;
     if (qty > 0) {
@@ -2837,8 +2856,15 @@ function updateCartUI() {
         mcb.style.display = 'flex';
       }
       mcb.style.opacity = '1';
+      mcb.style.pointerEvents = 'auto';
+      if (prevQty !== qty) {
+        mcb.classList.remove('bounce');
+        void mcb.offsetWidth; // trigger reflow
+        mcb.classList.add('bounce');
+      }
     } else {
       mcb.style.display = 'none';
+      mcb.style.pointerEvents = 'none';
     }
   }
 }
