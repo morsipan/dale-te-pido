@@ -2463,6 +2463,44 @@
         </div>
       </section>
 
+      <!-- SLIDE 45: STEPPER 1-CLICK BIGHOUSE & BLINDAJE ICONOGRAFÍA FERRENOW -->
+      <section class="slide" id="slide-45">
+        <span class="slide-badge" style="background:rgba(16,185,129,0.15);border-color:rgba(16,185,129,0.4);color:#10B981;"><i class="bi bi-patch-check-fill"></i> Etapa 45 · Release 21 de Noviembre 2026</span>
+        <h2 class="slide-title">Normalización de Botones BigHouse (Stepper 1-Click) & Blindaje de Iconografía Multi-Rubro FerreNow</h2>
+        <p class="slide-desc">Resolución del selector de compra en BigHouse para activar el Stepper Persistente en 1 clic y blindaje de la iconografía de FerreNow (emojis oficiales, tolerancia de alias y fallback resiliente).</p>
+
+        <div class="grid-2" style="margin-top:16px; display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+          <div class="card">
+            <div class="card-title" style="color:#EF4444;"><i class="bi bi-cart-plus-fill"></i> Normalización BigHouse: Stepper Inmediato sin Falso "Personalizar"</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Depuración en Supabase de estructuras residuales con opciones vacías y endurecimiento de la condición <code>hasVariants</code> para requerir opciones múltiples genuinas (<code>v.options.length &gt; 1</code>). BigHouse ahora despliega directamente <code>+ Agregar</code> que conmuta al stepper <code>- 1 +</code> persistente al primer toque.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#10B981;"><i class="bi bi-tools"></i> Blindaje de Iconografía &amp; Tokens FerreNow</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Enriquecimiento de <code>company_settings.billing_info.design</code> con el emoji oficial <code>🛠️</code>, sincronización de íconos en carril de categorías (<code>⚡</code>, <code>🔧</code>, <code>🔩</code>, <code>🎨</code>, <code>🦺</code>), reemplazo de imagen Unsplash rota por CDN activo y placeholder de búsqueda contextualizado a ferretería e industria.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#6366F1;"><i class="bi bi-signpost-split-fill"></i> Tolerancia de Alias y Rutas de Acceso</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Incorporación de normalizadores de alias en <code>tienda.html</code> y <code>api/store.js</code> (soporte automático para <code>ferrenow</code> &harr; <code>ferre-now</code> y <code>bighouseburgers</code> &harr; <code>bighouse</code>), garantizando carga inmediata del catálogo sin importar cómo el cliente ingrese el slug.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#F59E0B;"><i class="bi bi-shield-check"></i> Fallback Resiliente de Identidad Visual</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Sustitución de inicializadores hardcodeados en el topbar por componentes reactivos que heredan el emoji y paleta de la tienda. Ante fallas de red en la carga del logo JPG, el icono muta automáticamente al emoji oficial del rubro sin alterar la legibilidad ni la experiencia del usuario.
+            </p>
+          </div>
+        </div>
+      </section>
+
+
     </main>
 
     <!-- BOTTOMBAR -->
@@ -2483,7 +2521,7 @@
 
 <script>
   let currentSlide = 1;
-  const totalSlides = 44;
+  const totalSlides = 45;
 
   function showSlide(index) {
     if (index < 1) index = 1;

@@ -1015,3 +1015,13 @@ Cápsula elegante de 54px con acabado obsidiana (`#09090b`), ícono de bolsa de 
 Integrado nativamente con `updateCartUI()`, `openCart()` y `closeCart()`. Responde en tiempo real a modificaciones de cantidad desde tarjetas o desde el drawer, auto-ocultándose si el carrito vuelve a cero.
 
 ---
+
+
+---
+
+### Etapa 45 · Release 21 de Noviembre 2026
+#### Normalización de Botones BigHouse (Stepper 1-Click) & Blindaje de Iconografía Multi-Rubro FerreNow
+- **Normalización BigHouse (Stepper Inmediato sin Falso "Personalizar"):** Depuración en Supabase de estructuras residuales con opciones vacías y endurecimiento de la condición `hasVariants` para requerir opciones múltiples genuinas (`v.options.length > 1`). BigHouse ahora despliega directamente `+ Agregar` que conmuta al stepper `- 1 +` persistente al primer toque.
+- **Blindaje de Iconografía & Tokens FerreNow:** Enriquecimiento de `company_settings.billing_info.design` con el emoji oficial `🛠️`, sincronización de íconos en carril de categorías (`⚡`, `🔧`, `🔩`, `🎨`, `🦺`), reemplazo de imagen Unsplash rota por CDN activo y placeholder de búsqueda contextualizado a ferretería e industria.
+- **Tolerancia de Alias y Rutas de Acceso:** Incorporación de normalizadores de alias en `tienda.html` y `api/store.js` (soporte automático para `ferrenow` ↔ `ferre-now` y `bighouseburgers` ↔ `bighouse`), garantizando carga inmediata del catálogo sin importar cómo el cliente ingrese el slug.
+- **Fallback Resiliente de Identidad Visual:** Sustitución de inicializadores hardcodeados en el topbar por componentes reactivos que heredan el emoji y paleta de la tienda. Ante fallas de red en la carga del logo JPG, el icono muta automáticamente al emoji oficial del rubro sin alterar la legibilidad ni la experiencia del usuario.

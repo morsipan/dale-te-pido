@@ -164,6 +164,11 @@ export default async function handler(req, res) {
 
   // 2. Determine store ID
   let storeId = query.store || req.query?.store;
+  if (storeId) {
+    const sLow = String(storeId).toLowerCase().trim();
+    if (sLow === 'ferrenow') storeId = 'ferre-now';
+    if (sLow === 'bighouseburger' || sLow === 'bighouseburgers') storeId = 'bighouse';
+  }
 
   // Serve landing.html directly for main domains root '/' without store query param
   const mainDomainsToRedirect = [

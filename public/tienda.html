@@ -1716,6 +1716,11 @@ if (!detectedStore) {
 if (!detectedStore) {
   detectedStore = localStorage.getItem('storeapp_store_id') || 'demo';
 }
+if (detectedStore) {
+  const dsLow = detectedStore.toLowerCase();
+  if (dsLow === 'ferrenow') detectedStore = 'ferre-now';
+  if (dsLow === 'bighouseburger' || dsLow === 'bighouseburgers') detectedStore = 'bighouse';
+}
 const STORE_ID = detectedStore.toLowerCase();
 localStorage.setItem('storeapp_store_id', STORE_ID);
 
@@ -1932,7 +1937,7 @@ function applyConfig() {
   if (logoEl && (!logoText || !logoImg)) {
     logoEl.innerHTML = `
       <img id="logo-img" alt="${storeName}" style="display:none; height:36px; width:36px; object-fit:cover; border-radius:8px; flex-shrink:0; box-shadow:0 2px 8px rgba(0,0,0,0.3);"/>
-      <span class="logo-icon" id="logo-icon">🍔</span>
+      <span class="logo-icon" id="logo-icon">${cfg.emoji || (typeof CFG !== 'undefined' ? CFG.emoji : '') || (STORE_ID === 'ferre-now' ? '🛠️' : (STORE_ID === 'bighouse' ? '🍔' : '🏪'))}</span>
       <span id="logo-text" class="logo-title" style="color:var(--white) !important; font-weight:800; font-size:18px; letter-spacing:-0.01em;">${storeName}</span>
     `;
     logoIcon = document.getElementById('logo-icon');
@@ -2517,7 +2522,7 @@ function render() {
     const qty = getProductCartQty(p.id);
     const flag = ORIGIN_FLAGS[p.origen] || '';
     const hasVideo = p.video_url && window.CAN_USE_MICRO_VIDEOS;
-    const hasVariants = (p.variants && p.variants.length > 0) || (p.modifiers && p.modifiers.length > 0);
+    const hasVariants = (p.variants && Array.isArray(p.variants) && p.variants.some(v => v && Array.isArray(v.options) && v.options.length > 1)) || (p.modifiers && Array.isArray(p.modifiers) && p.modifiers.length > 0);
     return `
     <div class="product-card ${p.stock <= 0 ? 'out-of-stock' : ''} ${qty > 0 ? 'in-cart' : ''}" id="pcard-${p.id}" style="animation-delay:${Math.min(i,12)*30}ms;cursor:pointer;"
       onclick='openProductDrawer(${JSON.stringify(p.id)})'>
@@ -3583,7 +3588,7 @@ function syncProductCardUI(id) {
   const qc = document.getElementById('qc-' + baseId);
   if (!qc) return;
 
-  const hasVariants = (p.variants && p.variants.length > 0) || (p.modifiers && p.modifiers.length > 0);
+  const hasVariants = (p.variants && Array.isArray(p.variants) && p.variants.some(v => v && Array.isArray(v.options) && v.options.length > 1)) || (p.modifiers && Array.isArray(p.modifiers) && p.modifiers.length > 0);
   if (hasVariants) {
     if (qty > 0) {
       qc.innerHTML = `<i class="bi bi-sliders"></i> Personalizar <span class="badge-count">${qty}</span>`;
@@ -4327,7 +4332,7 @@ function applyStoredConfig() {
     if (!logoImgEl || !logoTextEl) {
       logoEl.innerHTML = `
         <img id="logo-img" alt="${storeName}" style="display:none; height:36px; width:36px; object-fit:cover; border-radius:8px; flex-shrink:0; box-shadow:0 2px 8px rgba(0,0,0,0.3);"/>
-        <span class="logo-icon" id="logo-icon">🍔</span>
+        <span class="logo-icon" id="logo-icon">${cfg.emoji || (typeof CFG !== 'undefined' ? CFG.emoji : '') || (STORE_ID === 'ferre-now' ? '🛠️' : (STORE_ID === 'bighouse' ? '🍔' : '🏪'))}</span>
         <span id="logo-text" class="logo-title" style="color:var(--white) !important; font-weight:800; font-size:18px; letter-spacing:-0.01em;">${storeName}</span>
       `;
       logoImgEl = document.getElementById('logo-img');
@@ -4339,7 +4344,7 @@ function applyStoredConfig() {
       logoImgEl.onerror = function() {
         this.style.display = 'none';
         if (logoIconEl) {
-          logoIconEl.textContent = cfg.emoji || '🏪';
+          logoIconEl.textContent = cfg.emoji || (typeof CFG !== 'undefined' ? CFG.emoji : '') || (STORE_ID === 'ferre-now' ? '🛠️' : (STORE_ID === 'bighouse' ? '🍔' : '🏪'));
           logoIconEl.style.display = 'flex';
         }
       };
@@ -4349,9 +4354,14 @@ function applyStoredConfig() {
     } else {
       logoImgEl.style.display = 'none';
       if (logoIconEl) {
-        logoIconEl.textContent = cfg.emoji || '🏪';
+        logoIconEl.textContent = cfg.emoji || (typeof CFG !== 'undefined' ? CFG.emoji : '') || (STORE_ID === 'ferre-now' ? '🛠️' : (STORE_ID === 'bighouse' ? '🍔' : '🏪'));
         logoIconEl.style.display = 'flex';
       }
+    }
+    const searchInputEl = document.getElementById('search');
+    if (searchInputEl) {
+      const isFood = (cfg.rubro && cfg.rubro.toLowerCase().includes('gastro')) || STORE_ID === 'bighouse';
+      searchInputEl.placeholder = isFood ? 'Buscar smash burgers, combos...' : `Buscar en ${storeName}...`;
     }
     if (logoTextEl) {
       logoTextEl.textContent = storeName;
