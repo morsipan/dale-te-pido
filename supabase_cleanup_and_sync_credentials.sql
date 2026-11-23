@@ -63,7 +63,7 @@ DECLARE
     v_new_stored TEXT;
 BEGIN
     FOR r IN 
-        SELECT id, store_id, password 
+        SELECT store_id, password 
         FROM public.store_auth 
         WHERE password IS NOT NULL 
           AND password != '' 
@@ -75,7 +75,7 @@ BEGIN
         
         UPDATE public.store_auth
         SET password = v_new_stored, updated_at = NOW()
-        WHERE id = r.id;
+        WHERE store_id = r.store_id;
 
         UPDATE public.company_settings
         SET password = v_new_stored, updated_at = NOW()
