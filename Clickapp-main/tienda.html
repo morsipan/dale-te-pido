@@ -2261,6 +2261,13 @@ async function loadSheet() {
         }
       }
       CFG.bg = cfg.bg != null ? cfg.bg : (parsedDesign.bg || CFG.bg || '');
+      CFG.bannerMobileImg = parsedDesign.banner_mobile_img || parsedDesign.bannerMobileImg || CFG.bannerMobileImg || '';
+      if (CFG.bg) {
+        try { localStorage.setItem(storeapp_hero_img_\, CFG.bg); } catch(e) {}
+      }
+      if (CFG.bannerMobileImg) {
+        try { localStorage.setItem(storeapp_hero_mobile_img_\, CFG.bannerMobileImg); } catch(e) {}
+      }
       CFG.logo = cfg.logo_url || parsedDesign.logo || CFG.logo || '';
       CFG.heroBgColor = parsedDesign.heroBgColor || CFG.heroBgColor || '#0E0E0E';
       CFG.heroImgOpacity = parsedDesign.heroImgOpacity != null ? Number(parsedDesign.heroImgOpacity) : (CFG.heroImgOpacity != null ? Number(CFG.heroImgOpacity) : 100);
@@ -2717,7 +2724,14 @@ function renderBanners(bannerData) {
       banner2El.style.gridColumn = '1 / -1';
     }
 
-    if (container) container.style.display = hasAny ? 'grid' : 'none';
+    if (container) {
+      container.style.display = hasAny ? 'grid' : 'none';
+      if (window.innerWidth <= 768) {
+        container.style.gridTemplateColumns = '1fr';
+      } else {
+        container.style.gridTemplateColumns = (mode === 'single' || (b1Active && !b2Active) || (!b1Active && b2Active)) ? '1fr' : '1fr 1fr';
+      }
+    }
   }
 }
 

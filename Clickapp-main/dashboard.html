@@ -10954,12 +10954,28 @@
         }
 
         if (tabla === 'company_settings' && typeof data === 'object' && data !== null) {
+          // Columns not present in company_settings table schema
           delete data.socials;
           delete data.payment_methods;
           delete data.gerente;
           delete data.design_settings;
           delete data.phone;
           delete data.email;
+          delete data.h1;
+          delete data.h2;
+          delete data.desc;
+          delete data.bg;
+          delete data.banner1_bg;
+          delete data.banner1_active;
+          delete data.banner2_bg;
+          delete data.banner2_active;
+          delete data.theme;
+          delete data.font;
+          delete data.font_body;
+          delete data.emoji;
+          delete data.brand_style;
+          delete data.subrubro;
+          delete data.color;
         }
 
         if (tabla === 'products' && typeof data === 'object' && data !== null) {
@@ -13680,6 +13696,17 @@
             if (document.getElementById('banner2-bg')) document.getElementById('banner2-bg').value = parsedEmail.banner2_bg || r.banner2_bg || '#1C1C1E';
             if (document.getElementById('banner2-active')) document.getElementById('banner2-active').checked = parsedEmail.banner2_active !== false;
 
+            if (parsedEmail.bg) {
+              cfg.bg = parsedEmail.bg;
+              localStorage.setItem('storeapp_hero_img_' + STORE_ID, cfg.bg);
+              const heroWrap = document.getElementById('hero-img-preview-wrap');
+              const heroPrev = document.getElementById('hero-img-preview');
+              if (heroWrap && heroPrev) {
+                heroPrev.src = cfg.bg;
+                heroWrap.style.display = 'block';
+              }
+            }
+
             if (parsedEmail.heroBgColor || r.heroBgColor) {
               cfg.heroBgColor = parsedEmail.heroBgColor || r.heroBgColor;
               updateHeroBgColor(cfg.heroBgColor);
@@ -13831,35 +13858,34 @@
               ...currentBillingInfo,
               design: {
                 ...(currentBillingInfo.design || {}),
+                bg: heroBgVal,
+                banner_mobile_img: heroMobileImgVal,
+                h1: h1Val,
+                h2: h2Val,
+                desc: descVal,
                 h1Color: h1ColorVal,
                 h2Color: h2ColorVal,
                 descColor: descColorVal,
                 heroBgColor: heroBgColorVal,
                 heroImgOpacity: heroImgOpacityVal,
-                banner_mobile_img: heroMobileImgVal,
-                banner_mode: bannerData.mode
+                banner_mode: bannerData.mode,
+                banner1_bg: bannerData.banner1.bg,
+                banner1_active: bannerData.banner1.active,
+                banner2_bg: bannerData.banner2.bg,
+                banner2_active: bannerData.banner2.active
               }
             };
 
             const patchPayload = {
-              h1: h1Val,
-              h2: h2Val,
-              desc: descVal,
-              bg: heroBgVal,
-              email: JSON.stringify(parsedEmail),
               billing_info: updatedBillingInfo,
               banner1_label: bannerData.banner1.label,
               banner1_title: bannerData.banner1.title,
               banner1_img: bannerData.banner1.img,
               banner1_cat: bannerData.banner1.cat,
-              banner1_bg: bannerData.banner1.bg,
-              banner1_active: bannerData.banner1.active,
               banner2_label: bannerData.banner2.label,
               banner2_title: bannerData.banner2.title,
               banner2_img: bannerData.banner2.img,
-              banner2_cat: bannerData.banner2.cat,
-              banner2_bg: bannerData.banner2.bg,
-              banner2_active: bannerData.banner2.active
+              banner2_cat: bannerData.banner2.cat
             };
 
             await updateInSupabase('company_settings', dbRow.id, patchPayload);
