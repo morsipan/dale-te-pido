@@ -2263,10 +2263,10 @@ async function loadSheet() {
       CFG.bg = cfg.bg != null ? cfg.bg : (parsedDesign.bg || CFG.bg || '');
       CFG.bannerMobileImg = parsedDesign.banner_mobile_img || parsedDesign.bannerMobileImg || CFG.bannerMobileImg || '';
       if (CFG.bg) {
-        try { localStorage.setItem(storeapp_hero_img_\, CFG.bg); } catch(e) {}
+        try { localStorage.setItem('storeapp_hero_img_' + STORE_ID, CFG.bg); } catch(e) {}
       }
       if (CFG.bannerMobileImg) {
-        try { localStorage.setItem(storeapp_hero_mobile_img_\, CFG.bannerMobileImg); } catch(e) {}
+        try { localStorage.setItem('storeapp_hero_mobile_img_' + STORE_ID, CFG.bannerMobileImg); } catch(e) {}
       }
       CFG.logo = cfg.logo_url || parsedDesign.logo || CFG.logo || '';
       CFG.heroBgColor = parsedDesign.heroBgColor || CFG.heroBgColor || '#0E0E0E';
