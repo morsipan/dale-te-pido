@@ -246,6 +246,9 @@ export default async function handler(req, res) {
           billing_cycle: s.billing_cycle || 'mensual',
           billing_info: bInfo,
           is_demo: bInfo.is_demo !== undefined ? bInfo.is_demo : null,
+          has_credential: Boolean(s.password && s.password.includes(':')),
+          credential_standard: (s.password && s.password.includes(':')) ? 'salt:sha256' : (s.password ? 'legacy' : 'none'),
+          last_credential_sync: bInfo.last_credential_sync || bInfo.last_password_reset || null,
           latest_invoice_url: s.latest_invoice_url || null,
           latest_invoice_date: s.latest_invoice_date || null,
           admin_email: s.admin_email || '',
@@ -763,6 +766,139 @@ export default async function handler(req, res) {
         reset_link: resetLink,
         message: `Correo de restablecimiento de contraseña enviado a ${emailTarget || 'la cuenta'}.`
       });
+    }
+
+    // 8b. Rotación / Regeneración Criptográfica Directa de Credencial (salt:sha256)
+    if (action === 'rotate_credential' || action === 'regenerate_credential') {
+      const targetStoreId = (reqBody?.store_id || req.query?.store_id || '').trim().toLowerCase();
+      if (!targetStoreId) {
+        return res.status(400).json({ success: false, error: 'Se requiere store_id para rotar la credencial' });
+      }
+
+      // Validar existencia y estado de la tienda
+      const storeRes = await fetch(`${SUPABASE_URL}/rest/v1/company_settings?store_id=eq.${encodeURIComponent(targetStoreId)}&select=store_id,business_name,admin_email,status,billing_info`, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      });
+
+      if (!storeRes.ok) {
+        return res.status(500).json({ success: false, error: 'Error al consultar la tienda en Supabase' });
+      }
+
+      const storeRows = await storeRes.json();
+      if (!storeRows || storeRows.length === 0 || storeRows[0].status === 'DELETED') {
+        return res.status(404).json({ success: false, error: 'La tienda no existe o fue dada de baja' });
+      }
+
+      const storeData = storeRows[0];
+      const customPass = (reqBody?.custom_password || '').trim();
+      const rand1 = crypto.randomBytes(3).toString('hex');
+      const rand2 = crypto.randomBytes(3).toString('hex');
+      const newRawPassword = customPass || `DTP-${rand1}-${rand2}!`;
+
+      if (newRawPassword.length < 6) {
+        return res.status(400).json({ success: false, error: 'La contraseña debe contener al menos 6 caracteres' });
+      }
+
+      // 1. Invocar RPC segura en PostgreSQL (genera salt:sha256 y actualiza store_auth y company_settings)
+      const rpcRes = await fetch(`${SUPABASE_URL}/rest/v1/rpc/reset_store_password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`
+        },
+        body: JSON.stringify({
+          p_identifier: targetStoreId,
+          p_new_password: newRawPassword
+        })
+      });
+
+      const rpcData = await rpcRes.json().catch(() => ({}));
+      if (!rpcRes.ok || !rpcData.success) {
+        console.error('Error en RPC reset_store_password:', rpcData);
+        return res.status(500).json({ success: false, error: rpcData.error || 'Fallo al actualizar credencial en Supabase' });
+      }
+
+      // 2. Invalidar sesiones previas guardando nuevo auth_epoch en billing_info
+      let bInfo = storeData.billing_info || {};
+      if (typeof bInfo === 'string') {
+        try { bInfo = JSON.parse(bInfo); } catch(e) { bInfo = {}; }
+      }
+      bInfo.last_password_reset = new Date().toISOString();
+      bInfo.last_credential_sync = new Date().toISOString();
+      bInfo.auth_epoch = Date.now();
+
+      await fetch(`${SUPABASE_URL}/rest/v1/company_settings?store_id=eq.${encodeURIComponent(targetStoreId)}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_KEY,
+          'Authorization': `Bearer ${SUPABASE_KEY}`
+        },
+        body: JSON.stringify({
+          billing_info: bInfo,
+          updated_at: new Date().toISOString()
+        })
+      });
+
+      // 3. Registrar log de auditoría
+      try {
+        const clientIp = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'ip';
+        await fetch(`${SUPABASE_URL}/rest/v1/store_audit_logs`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`
+          },
+          body: JSON.stringify({
+            store_id: targetStoreId,
+            event_type: 'Rotación de Credencial (Super Admin)',
+            details: `Nueva credencial salt:sha256 generada e invalidación de sesiones previas efectuada`,
+            device: 'Panel Super Admin',
+            ip: clientIp,
+            status: 'Normal',
+            created_at: new Date().toISOString()
+          })
+        });
+      } catch (e) {}
+
+      return res.status(200).json({
+        success: true,
+        store_id: targetStoreId,
+        business_name: storeData.business_name || targetStoreId,
+        admin_email: storeData.admin_email || '',
+        new_password: newRawPassword,
+        format: 'salt:sha256',
+        rotated_at: new Date().toISOString(),
+        message: `Credencial para "${storeData.business_name || targetStoreId}" regenerada con éxito.`
+      });
+    }
+
+    // 8c. Consulta en tiempo real de Estado de Credenciales (sin exponer hashes)
+    if (action === 'get_credentials_status') {
+      const getRes = await fetch(`${SUPABASE_URL}/rest/v1/company_settings?status=neq.DELETED&order=created_at.asc`, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      });
+      if (!getRes.ok) {
+        return res.status(500).json({ success: false, error: 'Error consultando tiendas en Supabase' });
+      }
+      const stores = await getRes.json();
+      const statusList = (stores || []).map(s => {
+        const bi = s.billing_info || {};
+        const isSalt = Boolean(s.password && s.password.includes(':'));
+        return {
+          store_id: s.store_id,
+          business_name: s.business_name || s.store_id,
+          admin_email: s.admin_email || '',
+          plan_level: s.plan_level || 'starter',
+          is_demo: Boolean(bi.is_demo),
+          has_credential: isSalt,
+          credential_format: isSalt ? 'salt:sha256' : (s.password ? 'legacy' : 'none'),
+          last_sync: bi.last_credential_sync || bi.last_password_reset || s.updated_at
+        };
+      });
+      return res.status(200).json({ success: true, credentials: statusList });
     }
 
     // Action: Reenviar correo de activación / bienvenida

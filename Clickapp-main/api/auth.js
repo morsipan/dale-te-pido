@@ -13,13 +13,15 @@ function verifyPassword(password, storedPassword) {
     return password === storedPassword;
   }
   const [salt, originalHash] = storedPassword.split(':');
-  const hash = crypto.createHash('sha256').update(password + salt).digest('hex');
-  return hash === originalHash;
+  // Soporte bidireccional estricto (salt+password y password+salt) para interoperabilidad total
+  const hash1 = crypto.createHash('sha256').update(password + salt).digest('hex');
+  const hash2 = crypto.createHash('sha256').update(salt + password).digest('hex');
+  return hash1 === originalHash || hash2 === originalHash;
 }
 
 function hashPassword(password) {
   const salt = crypto.randomBytes(16).toString('hex');
-  const hash = crypto.createHash('sha256').update(password + salt).digest('hex');
+  const hash = crypto.createHash('sha256').update(salt + password).digest('hex');
   return `${salt}:${hash}`;
 }
 
@@ -346,8 +348,8 @@ export default async function handler(req, res) {
             'Authorization': `Bearer ${SUPABASE_KEY}`
           },
           body: JSON.stringify({
-            p_store_id: actualStoreId,
-            p_new_password_hash: hashedPassword
+            p_identifier: actualStoreId,
+            p_new_password: new_password.trim()
           })
         });
 

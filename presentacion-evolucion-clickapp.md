@@ -1025,3 +1025,27 @@ Integrado nativamente con `updateCartUI()`, `openCart()` y `closeCart()`. Respon
 - **Blindaje de Iconografía & Tokens FerreNow:** Enriquecimiento de `company_settings.billing_info.design` con el emoji oficial `🛠️`, sincronización de íconos en carril de categorías (`⚡`, `🔧`, `🔩`, `🎨`, `🦺`), reemplazo de imagen Unsplash rota por CDN activo y placeholder de búsqueda contextualizado a ferretería e industria.
 - **Tolerancia de Alias y Rutas de Acceso:** Incorporación de normalizadores de alias en `tienda.html` y `api/store.js` (soporte automático para `ferrenow` ↔ `ferre-now` y `bighouseburgers` ↔ `bighouse`), garantizando carga inmediata del catálogo sin importar cómo el cliente ingrese el slug.
 - **Fallback Resiliente de Identidad Visual:** Sustitución de inicializadores hardcodeados en el topbar por componentes reactivos que heredan el emoji y paleta de la tienda. Ante fallas de red en la carga del logo JPG, el icono muta automáticamente al emoji oficial del rubro sin alterar la legibilidad ni la experiencia del usuario.
+
+---
+
+---
+
+## Diapositiva 46: Auditoría, Purga & Sincronización Criptográfica de Credenciales en Super Admin (salt:sha256)
+
+> **Hito / Estado:** Etapa 46 · Release 22 de Noviembre 2026
+
+Saneamiento integral de tiendas de prueba huérfanas en Supabase, estandarización estricta de credenciales bajo el esquema criptográfico `salt:sha256` y nueva suite de rotación instantánea e invalidación de sesiones desde el panel Super Admin.
+
+### Componentes e Innovaciones Implementadas:
+
+#### Purga de Huérfanos & Neutralización de Pruebas
+Eliminación de registros huérfanos y tiendas de prueba obsoletas (`test-ping-store`, `bigmount`, `cocostore`). El Super Admin y la base de datos PostgreSQL ahora conservan de forma limpia y exclusiva los 8 comercios reales activos y las 8 tiendas demo oficiales de la plataforma.
+
+#### Estándar Criptográfico `salt:sha256` Homogéneo
+Aislamiento y hash criptográfico con sal aleatoria de 16 bytes y digest SHA-256 en `store_auth` y `company_settings`. Eliminación total de contraseñas en texto plano o esquemas heredados, con soporte bidireccional y verificación robusta ante autenticación en `/api/auth`.
+
+#### Herramienta de Rotación Instantánea en Super Admin
+Incorporación de acción directa y modal reactivo para **Rotar / Regenerar Credencial** por tienda en `super-admin-secret-dashboard.html`. Genera claves de alta entropía, actualiza la base de datos vía RPC segura, invalida sesiones previas mediante `auth_epoch` y expone la clave por única vez con generador de mensaje listo para WhatsApp.
+
+#### Sincronización Multientorno & Purga de Caché
+Desacople definitivo de URLs residuales pertenecientes a la base de datos anterior. Actualización de archivos de entorno (`.env`, `.env.local`), limpieza defensiva de `localStorage` al inicializar y generación del script SQL `supabase_cleanup_and_sync_credentials.sql`.

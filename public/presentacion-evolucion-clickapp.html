@@ -2500,6 +2500,43 @@
         </div>
       </section>
 
+      <!-- SLIDE 46: AUDITORÍA, PURGA & SINCRONIZACIÓN CRIPTOGRÁFICA DE CREDENCIALES (SUPER ADMIN) -->
+      <section class="slide" id="slide-46">
+        <span class="slide-badge" style="background:rgba(59,130,246,0.15);border-color:rgba(59,130,246,0.4);color:#60A5FA;"><i class="bi bi-shield-lock-fill"></i> Etapa 46 · Release 22 de Noviembre 2026</span>
+        <h2 class="slide-title">Auditoría, Purga &amp; Sincronización Criptográfica de Credenciales en Super Admin (salt:sha256)</h2>
+        <p class="slide-desc">Saneamiento integral de tiendas de prueba huérfanas en Supabase, estandarización estricta de credenciales bajo el esquema criptográfico <code>salt:sha256</code> y nueva suite de rotación instantánea e invalidación de sesiones desde el panel Super Admin.</p>
+
+        <div class="grid-2" style="margin-top:16px; display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+          <div class="card">
+            <div class="card-title" style="color:#EF4444;"><i class="bi bi-trash3-fill"></i> Purga de Huérfanos &amp; Neutralización de Pruebas</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Eliminación de registros huérfanos y tiendas de prueba obsoletas (<code>test-ping-store</code>, <code>bigmount</code>, <code>cocostore</code>). El Super Admin y la base de datos PostgreSQL ahora conservan de forma limpia y exclusiva los 8 comercios reales activos y las 8 tiendas demo oficiales de la plataforma.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#10B981;"><i class="bi bi-key-fill"></i> Estándar Criptográfico <code>salt:sha256</code> Homogéneo</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Aislamiento y hash criptográfico con sal aleatoria de 16 bytes y digest SHA-256 en <code>store_auth</code> y <code>company_settings</code>. Eliminación total de contraseñas en texto plano o esquemas heredados, con soporte bidireccional y verificación robusta ante autenticación.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#3B82F6;"><i class="bi bi-arrow-repeat"></i> Herramienta de Rotación Instantánea en Super Admin</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Incorporación de acción directa y modal reactivo para <strong>Rotar / Regenerar Credencial</strong> por tienda. Genera claves de alta entropía, actualiza la base de datos vía RPC segura, invalida sesiones previas mediante <code>auth_epoch</code> y expone la clave por única vez con generador de mensaje para WhatsApp.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#F59E0B;"><i class="bi bi-database-check"></i> Sincronización Multientorno &amp; Purga de Caché</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Desacople definitivo de URLs residuales pertenecientes a la base de datos anterior. Actualización de archivos de entorno (<code>.env</code>, <code>.env.local</code>), limpieza defensiva de <code>localStorage</code> al inicializar y generación del script SQL <code>supabase_cleanup_and_sync_credentials.sql</code>.
+            </p>
+          </div>
+        </div>
+      </section>
+
 
     </main>
 
@@ -2512,7 +2549,7 @@
         <div class="progress-fill" id="progress-fill"></div>
       </div>
       <div>
-        Dale! Te Pido © 2026 · Versión 4.27 Carrito Flotante Mobile · Actualizado 20/11/2026
+        Dale! Te Pido © 2026 · Versión 4.28 Super Admin Credential Hardening · Actualizado 22/11/2026
       </div>
     </footer>
 
@@ -2521,7 +2558,7 @@
 
 <script>
   let currentSlide = 1;
-  const totalSlides = 45;
+  const totalSlides = 46;
 
   function showSlide(index) {
     if (index < 1) index = 1;
