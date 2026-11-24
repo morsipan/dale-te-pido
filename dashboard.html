@@ -8439,10 +8439,10 @@
                               </div>
                               <div class="prev-spotlight-label" id="spl-cat-label" style="font-size:7px;">Etiqueta categoría</div>
                             </div>
-                            <div style="font-size:9.5px;font-weight:700;color:#F0F0EC;line-height:1.25;margin-bottom:4px;">
+                            <div class="prev-card-title" style="font-size:9.5px;font-weight:700;color:#F0F0EC;line-height:1.25;margin-bottom:4px;">
                               Llave inglesa ajust.
                             </div>
-                            <div style="font-size:12px;font-weight:800;color:#F0F0EC;margin-bottom:6px;">$15.900</div>
+                            <div class="prev-card-price" style="font-size:12px;font-weight:800;color:#F0F0EC;margin-bottom:6px;">$15.900</div>
                             <div style="position:relative;">
                               <div class="prev-add-btn" style="border-radius:9999px;padding:4px 8px;font-size:8px;font-weight:700;text-align:center;border:1px solid rgba(255,255,255,.15);color:#B0B0B8;display:flex;align-items:center;justify-content:space-between;gap:4px;">
                                 <span style="width:14px;height:14px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;">−</span>
@@ -8466,10 +8466,10 @@
                             <div class="prev-cat-label" style="font-size:7px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">
                               Electricidad
                             </div>
-                            <div style="font-size:9.5px;font-weight:700;color:#F0F0EC;line-height:1.25;margin-bottom:4px;">
+                            <div class="prev-card-title" style="font-size:9.5px;font-weight:700;color:#F0F0EC;line-height:1.25;margin-bottom:4px;">
                               Cinta aisladora 20m
                             </div>
-                            <div style="font-size:12px;font-weight:800;color:#F0F0EC;margin-bottom:6px;">$4.200</div>
+                            <div class="prev-card-price" style="font-size:12px;font-weight:800;color:#F0F0EC;margin-bottom:6px;">$4.200</div>
                             <div class="prev-add-btn" style="border-radius:9999px;padding:4px 8px;font-size:8px;font-weight:700;text-align:center;border:1px solid rgba(255,255,255,.15);color:#B0B0B8;display:flex;align-items:center;justify-content:space-between;gap:4px;">
                               <span style="width:14px;height:14px;background:rgba(255,255,255,.08);border-radius:50%;display:flex;align-items:center;justify-content:center;">−</span>
                               <span>+ Agregar</span>
@@ -8490,10 +8490,10 @@
                             <div class="prev-cat-label" style="font-size:7px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px;">
                               Electricidad
                             </div>
-                            <div style="font-size:9.5px;font-weight:700;color:#F0F0EC;line-height:1.25;margin-bottom:4px;">
+                            <div class="prev-card-title" style="font-size:9.5px;font-weight:700;color:#F0F0EC;line-height:1.25;margin-bottom:4px;">
                               Disyuntor Dif. 20A
                             </div>
-                            <div style="font-size:12px;font-weight:800;color:#F0F0EC;margin-bottom:6px;">$28.000</div>
+                            <div class="prev-card-price" style="font-size:12px;font-weight:800;color:#F0F0EC;margin-bottom:6px;">$28.000</div>
                             <div style="padding:4px;text-align:center;font-size:7.5px;color:#8A8A90;border:1px solid rgba(255,255,255,.08);border-radius:6px;opacity:.7;">
                               Sin stock
                             </div>
@@ -12592,6 +12592,9 @@
         if (card) {
           card.style.background = t.cardBg;
           card.style.borderColor = t.border;
+          card.querySelectorAll('.prev-card-title, .prev-card-price').forEach(el => {
+            el.style.color = t.text;
+          });
         }
       });
       document.querySelectorAll('.prev-cat-label').forEach(el => { if (el) el.style.color = c; });
@@ -12629,46 +12632,51 @@
     }
 
     function pickColor(btn, color, index) {
-      const oldColor = cfg.color;
       cfg.color = color;
+      cfg.h2Color = color; // Propagar siempre el color principal al texto de acento (H2) del banner
       document.querySelectorAll('.color-swatch').forEach(b => b.classList.remove('active'));
       if (btn) btn.classList.add('active');
       const cInput = document.getElementById('cfg-color');
       if (cInput) cInput.value = color;
       const cHex = document.getElementById('color-hex');
-      if (cHex) cHex.textContent = color;
+      if (cHex) cHex.textContent = color.toUpperCase();
 
       const cCat = document.getElementById('catalog-brand-color-picker');
       if (cCat) cCat.value = color;
       const cCatHex = document.getElementById('catalog-brand-color-hex');
-      if (cCatHex) cCatHex.textContent = color;
+      if (cCatHex) cCatHex.textContent = color.toUpperCase();
 
-      // Si el gestor no fijó un color manual independiente para la línea 2, mantenerlo sincronizado con el color de su sitio
-      if (!cfg.h2ColorManual && (!cfg.h2Color || cfg.h2Color.toLowerCase() === (oldColor || '').toLowerCase() || cfg.h2Color === '#D72638')) {
-        updateBannerTextColor('h2', color);
-      }
+      const bSwatch = document.getElementById('theme-brand-swatch');
+      if (bSwatch) bSwatch.style.background = color;
+
+      // Sincronizar automáticamente la segunda línea del banner (H2)
+      updateBannerTextColor('h2', color);
 
       flashSpotlight();
       previewUpdate();
     }
     function pickColorCustom(color, index) {
-      const oldColor = cfg.color;
       cfg.color = color;
-      document.querySelectorAll('.color-swatch').forEach(b => b.classList.remove('active'));
+      cfg.h2Color = color; // Propagar siempre el color principal al texto de acento (H2) del banner
+      document.querySelectorAll('.color-swatch').forEach(b => {
+        if (b.dataset.color && b.dataset.color.toLowerCase() === color.toLowerCase()) b.classList.add('active');
+        else b.classList.remove('active');
+      });
       const cHex = document.getElementById('color-hex');
-      if (cHex) cHex.textContent = color;
+      if (cHex) cHex.textContent = color.toUpperCase();
 
       const cInput = document.getElementById('cfg-color');
       if (cInput) cInput.value = color;
       const cCat = document.getElementById('catalog-brand-color-picker');
       if (cCat) cCat.value = color;
       const cCatHex = document.getElementById('catalog-brand-color-hex');
-      if (cCatHex) cCatHex.textContent = color;
+      if (cCatHex) cCatHex.textContent = color.toUpperCase();
 
-      // Si el gestor no fijó un color manual independiente para la línea 2, mantenerlo sincronizado con el color de su sitio
-      if (!cfg.h2ColorManual && (!cfg.h2Color || cfg.h2Color.toLowerCase() === (oldColor || '').toLowerCase() || cfg.h2Color === '#D72638')) {
-        updateBannerTextColor('h2', color);
-      }
+      const bSwatch = document.getElementById('theme-brand-swatch');
+      if (bSwatch) bSwatch.style.background = color;
+
+      // Sincronizar automáticamente la segunda línea del banner (H2)
+      updateBannerTextColor('h2', color);
 
       flashSpotlight();
       previewUpdate();
@@ -12710,7 +12718,12 @@
     function pickTheme(btn, theme) {
       cfg.theme = theme;
       document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      if (btn && btn.classList) {
+        btn.classList.add('active');
+      } else {
+        const targetBtn = document.getElementById('theme-' + theme);
+        if (targetBtn) targetBtn.classList.add('active');
+      }
       previewUpdate();
     }
 
@@ -12912,26 +12925,6 @@
 
     async function syncStoreConfigToSupabase(cfgObj) {
       try {
-        const dataToSave = {
-          business_name: cfgObj.name || '',
-          tagline: cfgObj.tagline || '',
-          primary_color: cfgObj.color || '#D72638',
-          wapp: cfgObj.wapp || '',
-          direccion: cfgObj.direccion || '',
-          horario: cfgObj.horario || '',
-          rubro: cfgObj.rubro || '',
-          logo_url: cfgObj.logo || '',
-          instagram: cfgObj.socials?.ig || '',
-          facebook: cfgObj.socials?.fb || '',
-          social_web: cfgObj.socials?.web || '',
-          social_ig: cfgObj.socials?.ig || '',
-          social_fb: cfgObj.socials?.fb || '',
-          social_x: cfgObj.socials?.x || '',
-          social_ml: cfgObj.socials?.ml || '',
-          social_tn: cfgObj.socials?.tn || '',
-          social_maps: cfgObj.socials?.maps || ''
-        };
-
         const activeStore = (new URLSearchParams(window.location.search).get('store') || window.localStorage.getItem('storeapp_store_id') || 'ferre-now').toLowerCase();
         const sbUrl = localStorage.getItem('storeapp_supabase_url') || (typeof SUPABASE_URL !== 'undefined' ? SUPABASE_URL : '');
         const sbKey = localStorage.getItem('storeapp_supabase_key') || (typeof SUPABASE_KEY !== 'undefined' ? SUPABASE_KEY : '');
@@ -12939,144 +12932,96 @@
         if (!sbUrl || !sbKey) return;
 
         const configRes = await fetch(`${sbUrl}/rest/v1/company_settings?store_id=eq.${encodeURIComponent(activeStore)}`, {
+          cache: 'no-cache',
           headers: {
             'apikey': sbKey,
             'Authorization': `Bearer ${sbKey}`
           }
         });
 
-        if (configRes.ok) {
-          const configData = await configRes.json();
-          let parsedEmail = {};
-          let id = null;
-          let dbRow = null;
+        if (!configRes.ok) return;
+        const configData = await configRes.json();
+        if (!configData || configData.length === 0) return;
 
-          if (configData && configData.length > 0) {
-            dbRow = configData[0];
-            id = dbRow.id;
-            try {
-              if (dbRow.email) parsedEmail = JSON.parse(dbRow.email);
-            } catch(e) {}
-          }
+        const dbRow = configData[0];
+        const id = dbRow.id;
 
-          // Combine with new values from cfgObj
-          parsedEmail.h1 = cfgObj.h1 !== undefined ? cfgObj.h1 : parsedEmail.h1 || '';
-          parsedEmail.h2 = cfgObj.h2 !== undefined ? cfgObj.h2 : parsedEmail.h2 || '';
-          parsedEmail.desc = cfgObj.desc !== undefined ? cfgObj.desc : parsedEmail.desc || '';
-          parsedEmail.h1Color = cfgObj.h1Color !== undefined ? cfgObj.h1Color : (parsedEmail.h1Color || '#FFFFFF');
-          parsedEmail.h2Color = cfgObj.h2Color !== undefined ? cfgObj.h2Color : (parsedEmail.h2Color || '#D72638');
-          parsedEmail.descColor = cfgObj.descColor !== undefined ? cfgObj.descColor : (parsedEmail.descColor || '#E0E0E0');
-          parsedEmail.emoji = cfgObj.emoji !== undefined ? cfgObj.emoji : parsedEmail.emoji || '🏪';
-          parsedEmail.theme = cfgObj.theme !== undefined ? cfgObj.theme : parsedEmail.theme || 'dark';
-          parsedEmail.font = cfgObj.font !== undefined ? cfgObj.font : parsedEmail.font || '';
-          parsedEmail.fontBody = cfgObj.fontBody !== undefined ? cfgObj.fontBody : parsedEmail.fontBody || '';
-          
-          let finalPassword = '';
-          if (cfgObj.password !== undefined && cfgObj.password !== '') {
-            if (cfgObj.password.includes(':')) {
-              finalPassword = cfgObj.password;
-            } else {
-              const salt = Math.random().toString(36).substring(2, 10);
-              const hashed = await hashPasswordSHA256(cfgObj.password, salt);
-              finalPassword = `${salt}:${hashed}`;
-              cfgObj.password = finalPassword;
-              localStorage.setItem('storeapp_cfg_' + STORE_ID, JSON.stringify(cfgObj));
-              localStorage.setItem('storeapp_cfg_' + STORE_ID, JSON.stringify(cfgObj));
-            }
+        let currentBillingInfo = (typeof dbRow.billing_info === 'object' && dbRow.billing_info !== null) ? dbRow.billing_info : {};
+        if (typeof currentBillingInfo === 'string') {
+          try { currentBillingInfo = JSON.parse(currentBillingInfo); } catch(e) { currentBillingInfo = {}; }
+        }
+        const existingDesign = currentBillingInfo.design || {};
+
+        const effectiveColor = cfgObj.color || dbRow.primary_color || existingDesign.color || '#D72638';
+        const effectiveH2Color = cfgObj.h2Color || cfgObj.color || existingDesign.h2Color || effectiveColor;
+
+        const updatedDesign = {
+          ...existingDesign,
+          theme: cfgObj.theme || existingDesign.theme || 'dark',
+          color: effectiveColor,
+          h2Color: effectiveH2Color,
+          h1: cfgObj.h1 !== undefined ? cfgObj.h1 : (existingDesign.h1 || ''),
+          h2: cfgObj.h2 !== undefined ? cfgObj.h2 : (existingDesign.h2 || ''),
+          desc: cfgObj.desc !== undefined ? cfgObj.desc : (existingDesign.desc || ''),
+          h1Color: cfgObj.h1Color || existingDesign.h1Color || '#FFFFFF',
+          descColor: cfgObj.descColor || existingDesign.descColor || '#E0E0E0',
+          emoji: cfgObj.emoji || existingDesign.emoji || '🏪',
+          font: cfgObj.font || existingDesign.font || '',
+          fontBody: cfgObj.fontBody || existingDesign.fontBody || '',
+          bg: cfgObj.bg !== undefined ? cfgObj.bg : (existingDesign.bg || ''),
+          banner_mobile_img: cfgObj.banner_mobile_img !== undefined ? cfgObj.banner_mobile_img : (existingDesign.banner_mobile_img || ''),
+          heroBgColor: cfgObj.heroBgColor || existingDesign.heroBgColor || '#0E0E0E',
+          heroImgOpacity: cfgObj.heroImgOpacity != null ? cfgObj.heroImgOpacity : (existingDesign.heroImgOpacity != null ? existingDesign.heroImgOpacity : 100),
+          heroOverlay: cfgObj.heroOverlay || existingDesign.heroOverlay || 'rgba(0,0,0,0.48)',
+          brand_style: cfgObj.brand_style || existingDesign.brand_style || 'vibrante'
+        };
+
+        currentBillingInfo.design = updatedDesign;
+
+        let finalPassword = dbRow.password || '';
+        if (cfgObj.password && cfgObj.password.trim()) {
+          if (cfgObj.password.includes(':')) {
+            finalPassword = cfgObj.password;
           } else {
-            finalPassword = parsedEmail.password || '';
+            const salt = Math.random().toString(36).substring(2, 10);
+            const hashed = await hashPasswordSHA256(cfgObj.password, salt);
+            finalPassword = `${salt}:${hashed}`;
+            cfgObj.password = finalPassword;
           }
-          parsedEmail.password = finalPassword;
+        }
 
-          parsedEmail.bg = cfgObj.bg !== undefined ? cfgObj.bg : parsedEmail.bg || '';
-          parsedEmail.heroBgColor = cfgObj.heroBgColor !== undefined ? cfgObj.heroBgColor : (parsedEmail.heroBgColor || '#0E0E0E');
-          parsedEmail.heroImgOpacity = cfgObj.heroImgOpacity !== undefined ? cfgObj.heroImgOpacity : (parsedEmail.heroImgOpacity != null ? parsedEmail.heroImgOpacity : 100);
-          parsedEmail.subrubro = cfgObj.subrubro !== undefined ? cfgObj.subrubro : parsedEmail.subrubro || '';
-          parsedEmail.payment_methods = cfgObj.payment_methods !== undefined ? cfgObj.payment_methods : parsedEmail.payment_methods || { efectivo: true, transferencia: true, convenir: true };
-          parsedEmail.gerente = cfgObj.gerente !== undefined ? cfgObj.gerente : parsedEmail.gerente || { nombre: '', email: '', frecuencia: 'mensual' };
-          parsedEmail.horarios_data = cfgObj.horarios_data !== undefined ? cfgObj.horarios_data : parsedEmail.horarios_data || null;
-          parsedEmail.admin_email = cfgObj.admin_email !== undefined ? cfgObj.admin_email : parsedEmail.admin_email || '';
-          parsedEmail.night_guard_enabled = cfgObj.night_guard_enabled === true;
-          parsedEmail.night_guard_message = cfgObj.night_guard_message !== undefined ? cfgObj.night_guard_message : (parsedEmail.night_guard_message || 'La tienda en este momento está cerrada, pero vamos a dejar tu pedido listo para que en cuanto abramos podamos retomar tu pedido.');
-          dataToSave.email = JSON.stringify(parsedEmail);
-          dataToSave.design_settings = parsedEmail;
+        const dataToSave = {
+          business_name: cfgObj.name || dbRow.business_name || '',
+          tagline: cfgObj.tagline !== undefined ? cfgObj.tagline : (dbRow.tagline || ''),
+          primary_color: effectiveColor,
+          wapp: cfgObj.wapp !== undefined ? cfgObj.wapp : (dbRow.wapp || ''),
+          address: cfgObj.direccion !== undefined ? cfgObj.direccion : (dbRow.address || ''),
+          rubro: cfgObj.rubro !== undefined ? cfgObj.rubro : (dbRow.rubro || ''),
+          logo_url: cfgObj.logo || dbRow.logo_url || '',
+          billing_info: currentBillingInfo
+        };
 
-          const currentBillingInfo = (typeof dbRow?.billing_info === 'object' && dbRow?.billing_info !== null) ? dbRow.billing_info : {};
-          dataToSave.billing_info = {
-            ...currentBillingInfo,
-            design: {
-              ...(currentBillingInfo.design || {}),
-              bg: parsedEmail.bg || cfgObj.bg || '',
-              banner_mobile_img: parsedEmail.banner_mobile_img || cfgObj.banner_mobile_img || '',
-              h1: parsedEmail.h1 || '',
-              h2: parsedEmail.h2 || '',
-              desc: parsedEmail.desc || '',
-              h1Color: parsedEmail.h1Color || '#FFFFFF',
-              h2Color: parsedEmail.h2Color || '#D72638',
-              descColor: parsedEmail.descColor || '#E0E0E0',
-              emoji: parsedEmail.emoji || '🏪',
-              theme: parsedEmail.theme || 'dark',
-              font: parsedEmail.font || '',
-              fontBody: parsedEmail.fontBody || '',
-              heroBgColor: parsedEmail.heroBgColor || '#0E0E0E',
-              heroImgOpacity: parsedEmail.heroImgOpacity != null ? parsedEmail.heroImgOpacity : 100,
-              heroOverlay: parsedEmail.heroOverlay || 'rgba(0,0,0,0.48)'
-            }
-          };
+        if (finalPassword) dataToSave.password = finalPassword;
+        if (cfgObj.admin_email) dataToSave.admin_email = cfgObj.admin_email;
+        if (cfgObj.socials) {
+          if (cfgObj.socials.ig !== undefined) dataToSave.instagram = cfgObj.socials.ig;
+          if (cfgObj.socials.fb !== undefined) dataToSave.facebook = cfgObj.socials.fb;
+        }
+        if (cfgObj.nosotros !== undefined) dataToSave.nosotros = cfgObj.nosotros;
+        if (cfgObj.horarios_data !== undefined) dataToSave.horarios_data = cfgObj.horarios_data;
+        if (cfgObj.night_guard_enabled !== undefined) dataToSave.night_guard_active = cfgObj.night_guard_enabled === true;
+        if (cfgObj.night_guard_message !== undefined) dataToSave.night_guard_message = cfgObj.night_guard_message;
 
-          // Guardar en las nuevas columnas atómicas dedicadas
-          dataToSave.admin_email = parsedEmail.admin_email;
-          dataToSave.password = parsedEmail.password;
-          dataToSave.h1 = parsedEmail.h1;
-          dataToSave.h2 = parsedEmail.h2;
-          dataToSave.desc = parsedEmail.desc;
-          dataToSave.emoji = parsedEmail.emoji;
-          dataToSave.theme = parsedEmail.theme;
-          dataToSave.font = parsedEmail.font;
-          dataToSave.font_body = parsedEmail.fontBody;
-          dataToSave.bg = parsedEmail.bg;
-          dataToSave.qr_code = parsedEmail.qr_code || `https://daletepido.com.ar/api/qr?store=${activeStore}`;
-          dataToSave.nosotros = parsedEmail.nosotros || '';
-          dataToSave.subrubro = parsedEmail.subrubro || '';
-          dataToSave.pay_cash = parsedEmail.payment_methods?.efectivo !== false;
-          dataToSave.pay_transfer = parsedEmail.payment_methods?.transferencia !== false;
-          dataToSave.pay_agreement = parsedEmail.payment_methods?.convenir !== false;
-          dataToSave.gerente_nombre = parsedEmail.gerente?.nombre || '';
-          dataToSave.gerente_email = parsedEmail.gerente?.email || '';
-          dataToSave.gerente_frecuencia = parsedEmail.gerente?.frecuencia || 'mensual';
-          dataToSave.horarios_data = parsedEmail.horarios_data || null;
+        if (id) {
+          await updateInSupabase('company_settings', id, dataToSave);
+        } else {
+          dataToSave.store_id = activeStore;
+          const res = await postToSupabase('company_settings', dataToSave);
+          if (res && res.length > 0) id = res[0].id;
+        }
 
-          // Guardar banners en columnas dedicadas
-          dataToSave.banner1_label = dbRow?.banner1_label || 'NUEVAS';
-          dataToSave.banner1_title = dbRow?.banner1_title || 'Productos';
-          dataToSave.banner1_img = dbRow?.banner1_img || '';
-          dataToSave.banner1_cat = dbRow?.banner1_cat || '';
-          dataToSave.banner1_bg = parsedEmail.banner1_bg || '#1C1C1E';
-          dataToSave.banner1_active = parsedEmail.banner1_active !== false;
-
-          dataToSave.banner2_label = dbRow?.banner2_label || 'PROMOCIÓN';
-          dataToSave.banner2_title = dbRow?.banner2_title || 'Especiales';
-          dataToSave.banner2_img = dbRow?.banner2_img || '';
-          dataToSave.banner2_cat = dbRow?.banner2_cat || '';
-          dataToSave.banner2_bg = parsedEmail.banner2_bg || '#1C1C1E';
-          dataToSave.banner2_active = parsedEmail.banner2_active !== false;
-
-          // Preservar y asegurar credenciales críticas de Cloudinary, IA y DB
-          dataToSave.cloudinary_name = dbRow?.cloudinary_name || window.STORE_CREDENTIALS?.cloudinary_name || 'deuog0r34';
-          dataToSave.cloudinary_preset = dbRow?.cloudinary_preset || window.STORE_CREDENTIALS?.cloudinary_preset || 'clickapp';
-          dataToSave.ai_provider = dbRow?.ai_provider || window.STORE_CREDENTIALS?.ai_provider || 'gemini';
-          dataToSave.claude_key = dbRow?.claude_key || window.STORE_CREDENTIALS?.claude_key || '';
-          dataToSave.gemini_key = dbRow?.gemini_key || window.STORE_CREDENTIALS?.gemini_key || '';
-          dataToSave.supabase_url = dbRow?.supabase_url || window.STORE_CREDENTIALS?.supabase_url || sbUrl;
-          dataToSave.supabase_key = dbRow?.supabase_key || window.STORE_CREDENTIALS?.supabase_key || sbKey;
-
-          if (id) {
-            await updateInSupabase('company_settings', id, dataToSave);
-          } else {
-            dataToSave.store_id = activeStore;
-            const res = await postToSupabase('company_settings', dataToSave);
-            if (res && res.length > 0) id = res[0].id;
-          }
+        localStorage.setItem('storeapp_cfg_' + activeStore, JSON.stringify(cfgObj));
+        localStorage.setItem('storeapp_cfg_' + STORE_ID, JSON.stringify(cfgObj));
 
           // Sincronizar también a la tabla dedicada store_credentials sólo si está habilitada
           if (localStorage.getItem('storeapp_has_store_credentials') === 'true') {
@@ -13135,7 +13080,6 @@
               body: JSON.stringify(faqsToInsert)
             }).catch(() => {});
           }
-        }
       } catch (e) {
         console.error('Error syncing config to Supabase:', e);
       }
@@ -13314,8 +13258,12 @@
 
       // Theme
       document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-      const themeBtn = document.getElementById('theme-' + cfg.theme);
+      const activeTheme = cfg.theme || 'dark';
+      const themeBtn = document.getElementById('theme-' + activeTheme);
       if (themeBtn) themeBtn.classList.add('active');
+
+      const brandSwatch = document.getElementById('theme-brand-swatch');
+      if (brandSwatch) brandSwatch.style.background = cfg.color || '#D72638';
 
       previewUpdate();
       if (typeof initHeroImgPreview === 'function') initHeroImgPreview();
@@ -20636,66 +20584,7 @@ Solo especificaciones técnicas clave. Sin precio. Sin emojis. En español argen
       }
     }
 
-    async function syncStoreConfigToSupabase(storeCfg) {
-      try {
-        const configRes = await fetch(`${SUPABASE_URL}/rest/v1/company_settings?store_id=eq.${encodeURIComponent(STORE_ID)}`, {
-          cache: 'no-cache',
-          headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-        });
-        if (!configRes.ok) return;
-        const configData = await configRes.json();
-        if (!configData || configData.length === 0) return;
 
-        const row = configData[0];
-        let currentDesign = {};
-        try {
-          if (row.email) currentDesign = JSON.parse(row.email);
-        } catch(e) {}
-        currentDesign.night_guard_enabled = storeCfg.night_guard_enabled === true;
-        if (storeCfg.night_guard_message !== undefined) currentDesign.night_guard_message = storeCfg.night_guard_message;
-        if (storeCfg.horarios_data) currentDesign.horarios_data = storeCfg.horarios_data;
-
-        const updatePayload = {
-          business_name: storeCfg.name || storeCfg.business_name || row.business_name,
-          tagline: storeCfg.tagline !== undefined ? storeCfg.tagline : row.tagline,
-          wapp: storeCfg.wapp !== undefined ? storeCfg.wapp : row.wapp,
-          rubro: storeCfg.rubro !== undefined ? storeCfg.rubro : row.rubro,
-          subrubro: storeCfg.subrubro !== undefined ? storeCfg.subrubro : row.subrubro,
-          direccion: storeCfg.direccion !== undefined ? storeCfg.direccion : row.direccion,
-          horario: storeCfg.horario !== undefined ? storeCfg.horario : row.horario,
-          billing_info: storeCfg.billing_info !== undefined ? storeCfg.billing_info : row.billing_info,
-          password: storeCfg.password !== undefined ? storeCfg.password : row.password,
-          admin_email: storeCfg.admin_email !== undefined ? storeCfg.admin_email : row.admin_email,
-          pay_cash: storeCfg.payment_methods?.efectivo !== undefined ? storeCfg.payment_methods.efectivo : row.pay_cash,
-          pay_transfer: storeCfg.payment_methods?.transferencia !== undefined ? storeCfg.payment_methods.transferencia : row.pay_transfer,
-          pay_agreement: storeCfg.payment_methods?.convenir !== undefined ? storeCfg.payment_methods.convenir : row.pay_agreement,
-          email: JSON.stringify(currentDesign)
-        };
-        if (row.design_settings !== undefined) {
-          updatePayload.design_settings = currentDesign;
-        }
-
-        if (storeCfg.socials && typeof storeCfg.socials === 'object') {
-          if (storeCfg.socials.web !== undefined) updatePayload.social_web = storeCfg.socials.web;
-          if (storeCfg.socials.ig !== undefined) {
-            updatePayload.social_ig = storeCfg.socials.ig;
-            updatePayload.instagram = storeCfg.socials.ig;
-          }
-          if (storeCfg.socials.fb !== undefined) {
-            updatePayload.social_fb = storeCfg.socials.fb;
-            updatePayload.facebook = storeCfg.socials.fb;
-          }
-          if (storeCfg.socials.x !== undefined) updatePayload.social_x = storeCfg.socials.x;
-          if (storeCfg.socials.ml !== undefined) updatePayload.social_ml = storeCfg.socials.ml;
-          if (storeCfg.socials.tn !== undefined) updatePayload.social_tn = storeCfg.socials.tn;
-          if (storeCfg.socials.maps !== undefined) updatePayload.social_maps = storeCfg.socials.maps;
-        }
-
-        await updateInSupabase('company_settings', row.id, updatePayload);
-      } catch (e) {
-        console.error('Error in syncStoreConfigToSupabase:', e);
-      }
-    }
 
     async function saveConfig() {
       // Store info → merge into storeapp_cfg

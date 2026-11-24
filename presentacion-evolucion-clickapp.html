@@ -2812,6 +2812,43 @@
         </div>
       </section>
 
+      <!-- ETAPA 54: TEMA DE FONDO UNIVERSAL Y PROPAGACIÓN DE COLOR PRINCIPAL A H2 -->
+      <section class="slide" id="slide-54">
+        <span class="slide-badge" style="background:rgba(244,180,0,0.15);border-color:rgba(244,180,0,0.4);color:#F4B400;"><i class="bi bi-paint-bucket"></i> Etapa 54 · Release 24 de Noviembre 2026</span>
+        <h2 class="slide-title">Persistencia Universal de Tema de Fondo (Oscuro / Claro / Color) y Propagación de Marca a la Segunda Línea (H2) del Banner</h2>
+        <p class="slide-desc">Corrección integral del pipeline de guardado y aplicación cromática en el panel de control y tiendas: sincronización de temas con variables CSS (:root) dinámicas, erradicación de sobreescritura de funciones de persistencia y vinculación automática del color de acento principal al título secundario (H2) de las portadas.</p>
+
+        <div class="grid-2" style="margin-top:16px; display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+          <div class="card">
+            <div class="card-title" style="color:#F59E0B;"><i class="bi bi-circle-half"></i> 1. Selección Universal de Tema de Fondo</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Los botones <strong>Oscuro</strong>, <strong>Claro</strong> y <strong>Color</strong> de la Paleta de Colores ahora persisten de forma inmediata en Supabase dentro de <code>billing_info.design.theme</code>. Se eliminó el envío de columnas inexistentes a nivel de tabla que bloqueaban la actualización con error 400 (PGRST204).
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#10B981;"><i class="bi bi-type-h2"></i> 2. Propagación Automática de Marca al Banner H2</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Al elegir cualquier swatch o tono en el selector de color de marca, el valor se sincroniza y almacena de inmediato en <code>h2Color</code> (segunda línea del banner principal), asegurando que el acento visual del hero refleje la identidad de marca en todas las tiendas sin requerir ajustes manuales adicionales.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#60A5FA;"><i class="bi bi-brush"></i> 3. Variables de Tema Dinámicas en Tiendas</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              La función <code>applyStoredConfig()</code> en <code>tienda.html</code> y <code>tienda-demo.html</code> inyecta dinámicamente las variables de fondo (<code>--bg</code>, <code>--black</code>, <code>--card</code>, <code>--steel</code>, <code>--text</code>, <code>--nav-bg</code>) y conmuta las clases <code>.light-theme</code>, <code>.dark-theme</code> y <code>.brand-theme</code> en el cuerpo del documento, adaptando fondos, tarjetas y botones en tiempo real.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#EC4899;"><i class="bi bi-display"></i> 4. Live Preview de Alta Fidelidad en Dashboard</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              El mockup interactivo del Dashboard ahora actualiza simultáneamente el fondo del store, la navegación, el color de los textos y precios de tarjetas (clases <code>.prev-card-title</code> y <code>.prev-card-price</code>), los pills del hero y la muestra cromática del botón "Color".
+            </p>
+          </div>
+        </div>
+      </section>
+
     </main>
 
     <!-- BOTTOMBAR -->
@@ -2823,7 +2860,7 @@
         <div class="progress-fill" id="progress-fill"></div>
       </div>
       <div>
-        Dale! Te Pido © 2026 · Versión 4.32 Store Background Selector & Live Preview Certified · Actualizado 24/11/2026
+        Dale! Te Pido © 2026 · Versión 4.33 Theme & Brand Accent Sync Certified · Actualizado 24/11/2026
       </div>
     </footer>
 
@@ -2832,7 +2869,7 @@
 
 <script>
   let currentSlide = 1;
-  const totalSlides = document.querySelectorAll('section.slide').length || 53;
+  const totalSlides = document.querySelectorAll('section.slide').length || 54;
 
   function showSlide(index) {
     if (index < 1) index = 1;
