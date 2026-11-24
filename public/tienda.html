@@ -1827,6 +1827,7 @@ function optimizeImg(url, width = null, height = null) {
   if (!url || typeof url !== 'string') return '';
   url = url.trim();
   if (!url) return '';
+  if (url.startsWith('data:')) return url;
 
   // 1. Unsplash IDs o URLs completas
   if (url.startsWith('photo-')) {
@@ -4430,14 +4431,16 @@ function applyStoredConfig() {
   }
 
   if (heroImgUrl && heroBg) {
-    // Dynamic LCP preload optimization for PageSpeed
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = 'image';
-    link.href = optimizeImg(heroImgUrl, 1200);
-    link.imageSizes = '100vw';
-    link.setAttribute('fetchpriority', 'high');
-    document.head.appendChild(link);
+    // Dynamic LCP preload optimization for PageSpeed (avoid preloading data URIs)
+    if (!heroImgUrl.startsWith('data:')) {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = optimizeImg(heroImgUrl, 1200);
+      link.imageSizes = '100vw';
+      link.setAttribute('fetchpriority', 'high');
+      document.head.appendChild(link);
+    }
 
     heroBg.style.backgroundImage = `url('${optimizeImg(heroImgUrl, 1200)}')`;
     heroBg.style.opacity = heroImgOpacity.toString();

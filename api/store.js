@@ -16,6 +16,10 @@ function escapeAttr(str) {
 
 function toAbsoluteUrl(imgUrl) {
   if (!imgUrl) return 'https://www.daletepido.com.ar/dashboard-icon.png';
+  if (typeof imgUrl !== 'string') return 'https://www.daletepido.com.ar/dashboard-icon.png';
+  imgUrl = imgUrl.trim();
+  // OpenGraph and external crawlers do not support data URIs, and passing huge base64 generates HTTP 414
+  if (imgUrl.startsWith('data:')) return 'https://www.daletepido.com.ar/dashboard-icon.png';
   if (imgUrl.startsWith('http://') || imgUrl.startsWith('https://')) return imgUrl;
   if (imgUrl.startsWith('//')) return `https:${imgUrl}`;
   if (imgUrl.startsWith('/')) return `https://www.daletepido.com.ar${imgUrl}`;

@@ -439,7 +439,7 @@
         <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding: 20px 0;">
           <div style="display:inline-flex; align-items:center; gap:8px; padding:6px 16px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); border-radius:999px; margin-bottom:18px;">
             <i class="bi bi-rocket-takeoff-fill" style="color:var(--brand-amber); font-size:14px;"></i>
-            <span style="font-family:var(--font-mono); font-size:12px; font-weight:700; color:var(--brand-amber); letter-spacing:0.06em;">MEMORIA DE DESARROLLO INTEGRAL · ACTUALIZADO 29/10/2026 (v4.21)</span>
+            <span style="font-family:var(--font-mono); font-size:12px; font-weight:700; color:var(--brand-amber); letter-spacing:0.06em;">MEMORIA DE DESARROLLO INTEGRAL · ACTUALIZADO 23/11/2026 (v4.22)</span>
           </div>
           
           <h1 style="font-family:var(--font-heading); font-size:clamp(30px, 4vw, 50px); font-weight:800; line-height:1.15; max-width:980px; margin-bottom:14px; background:linear-gradient(135deg, #FFFFFF 30%, #F59E0B 75%, #F60000 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
@@ -2644,6 +2644,43 @@
             <div class="card-title" style="color:#8B5CF6;"><i class="bi bi-rocket-takeoff-fill"></i> Lista para Altas Comerciales Inmediatas</div>
             <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
               Plataforma consolidada y homogénea con total estabilidad para la reactivación y altas de comercios tras la migración de repositorio.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 50: PROTECCIÓN ANTE HTTP 414 & SANEAMIENTO DE IMÁGENES BASE64 -->
+      <section class="slide" id="slide-50">
+        <span class="slide-badge" style="background:rgba(245,158,11,0.15);border-color:rgba(245,158,11,0.4);color:#F59E0B;"><i class="bi bi-shield-fill-check"></i> Etapa 50 · Release 23 de Noviembre 2026</span>
+        <h2 class="slide-title">Blindaje Anti-HTTP 414 &amp; Saneamiento Integral de Data URIs Base64 en Catálogo y Metadatos</h2>
+        <p class="slide-desc">Eliminación de colisiones de URLs gigantescas (>43KB) en peticiones HTTP al servidor: mitigación en <code>api/store.js</code>, blindaje en <code>optimizeImg()</code> y extracción de logos a almacenamiento estático optimizado.</p>
+
+        <div class="grid-2" style="margin-top:16px; display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+          <div class="card">
+            <div class="card-title" style="color:#EF4444;"><i class="bi bi-bug-fill"></i> Causa Raíz: HTTP 414 (URI Too Long)</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Imágenes en formato <code>data:image/jpeg;base64,...</code> de más de 43.000 caracteres sufrían prefijación de dominio (<code>https://daletepido.com.ar/data:...</code>) en <code>toAbsoluteUrl()</code>, generando peticiones HTTP rechazadas inmediatamente por los servidores perimetrales.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#10B981;"><i class="bi bi-shield-check"></i> Protección Estricta en toAbsoluteUrl &amp; OpenGraph</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Las funciones de resolución de URLs absolutas en <code>api/store.js</code> ahora detectan data URIs y devuelven un icono público de respaldo (los rastreadores de WhatsApp, Facebook y Twitter no admiten base64 para <code>og:image</code>).
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#3B82F6;"><i class="bi bi-file-earmark-image"></i> Blindaje en optimizeImg &amp; Preload LCP</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              En <code>tienda.html</code> y <code>tienda-demo.html</code>, <code>optimizeImg()</code> detecta data URIs y las retorna de inmediato sin alterar su formato, y el inyector de <code>&lt;link rel="preload"&gt;</code> omite precargas erróneas de base64.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#8B5CF6;"><i class="bi bi-cloud-arrow-up-fill"></i> Extracción y Optimización de Logos en Base de Datos</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              El logo de Ferretería Polo fue extraído de su string base64 original a un activo JPG estático optimizado (<code>/img/stores/polo-logo.jpg</code>), actualizando Supabase con una URL pública ligera y segura.
             </p>
           </div>
         </div>
