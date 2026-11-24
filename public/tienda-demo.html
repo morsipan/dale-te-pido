@@ -2967,7 +2967,9 @@ function applyStoredConfig() {
   const heroBg = document.getElementById('hero-img-bg');
   const heroOverlay = document.getElementById('hero-overlay');
   const heroStripes = document.getElementById('hero-stripes');
-  const heroImgUrl = (localStorage.getItem(`storeapp_hero_img_${STORE_ID}`) || localStorage.getItem('storeapp_hero_img') || cfg.bg || '').trim();
+  const storeIdKey = typeof STORE_ID !== 'undefined' && STORE_ID ? `_${STORE_ID}` : '';
+  const storedHeroImg = (storeIdKey ? localStorage.getItem(`storeapp_hero_img${storeIdKey}`) : null) || localStorage.getItem('storeapp_hero_img') || '';
+  const heroImgUrl = (typeof CFG !== 'undefined' && CFG.bg !== undefined && CFG.bg !== null ? CFG.bg : (cfg.bg || storedHeroImg || '')).trim();
   if (heroImgUrl && heroBg) {
     // Dynamic LCP preload optimization for PageSpeed
     const link = document.createElement('link');

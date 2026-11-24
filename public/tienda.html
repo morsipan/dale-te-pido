@@ -4882,8 +4882,11 @@ function applyStoredConfig() {
   const heroBg = document.getElementById('hero-img-bg');
   const heroOverlay = document.getElementById('hero-overlay');
   const heroStripes = document.getElementById('hero-stripes');
-  const heroImgUrl = (CFG.bg !== undefined && CFG.bg !== null ? CFG.bg : (cfg.bg || localStorage.getItem(storeapp_hero_img_) || '')).trim();
-  const heroMobileImgUrl = (CFG.bannerMobileImg !== undefined && CFG.bannerMobileImg !== null ? CFG.bannerMobileImg : (cfg.banner_mobile_img || localStorage.getItem(storeapp_hero_mobile_img_) || '')).trim();
+  const storeIdKey = typeof STORE_ID !== 'undefined' && STORE_ID ? `_${STORE_ID}` : '';
+  const storedHeroImg = (storeIdKey ? localStorage.getItem(`storeapp_hero_img${storeIdKey}`) : null) || localStorage.getItem('storeapp_hero_img') || '';
+  const storedHeroMobileImg = (storeIdKey ? localStorage.getItem(`storeapp_hero_mobile_img${storeIdKey}`) : null) || localStorage.getItem('storeapp_hero_mobile_img') || '';
+  const heroImgUrl = (CFG.bg !== undefined && CFG.bg !== null ? CFG.bg : (cfg.bg || storedHeroImg || '')).trim();
+  const heroMobileImgUrl = (CFG.bannerMobileImg !== undefined && CFG.bannerMobileImg !== null ? CFG.bannerMobileImg : (cfg.banner_mobile_img || storedHeroMobileImg || '')).trim();
   const heroBgColor = cfg.heroBgColor || CFG.heroBgColor || '#0E0E0E';
   const heroImgOpacity = (cfg.heroImgOpacity != null ? Number(cfg.heroImgOpacity) : (CFG.heroImgOpacity != null ? Number(CFG.heroImgOpacity) : 100)) / 100;
 
