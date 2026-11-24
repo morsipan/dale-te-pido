@@ -127,6 +127,325 @@ a.logo{
   display:flex;align-items:center;justify-content:center;
 }
 
+
+/* ── TOPBAR ACTIONS & UNIFIED ACTION GROUP ───────── */
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.topbar-action-btn {
+  background: var(--steel, var(--iron));
+  border: 1px solid var(--zinc);
+  color: var(--white, #fff) !important;
+  border-radius: 10px;
+  height: 38px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all .18s ease;
+  user-select: none;
+}
+.topbar-action-btn:hover, .topbar-action-btn.is-active {
+  border-color: var(--red);
+  color: var(--red) !important;
+  background: rgba(246, 0, 0, 0.08);
+}
+.topbar-action-btn i {
+  font-size: 16px;
+}
+.search-toggle-btn {
+  display: none;
+  width: 38px;
+  padding: 0;
+}
+
+/* ── BARRA DE BÚSQUEDA DESPLEGABLE EN MOBILE ── */
+.mobile-search-drawer {
+  position: sticky;
+  top: 58px;
+  z-index: 99;
+  background: var(--nav-bg, rgba(20,20,22,0.95));
+  border-bottom: 1px solid var(--zinc);
+  padding: 10px 14px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  animation: mobileSearchSlideDown .2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes mobileSearchSlideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.mobile-search-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.mobile-search-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--silver);
+  font-size: 15px;
+  pointer-events: none;
+}
+.mobile-search-input {
+  width: 100%;
+  height: 40px;
+  background: var(--steel, var(--iron));
+  border: 1.5px solid var(--zinc);
+  border-radius: 999px;
+  padding: 0 40px 0 38px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--white, #fff);
+  outline: none;
+  transition: all .2s ease;
+}
+.mobile-search-input:focus {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px var(--red-glow, rgba(246,0,0,0.2));
+}
+.mobile-search-clear {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--silver);
+  font-size: 15px;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── AVATAR DE LA EMPRESA DENTRO DEL BANNER HERO ── */
+.hero-brand-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(14, 14, 14, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  padding: 5px 16px 5px 6px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+.hero-brand-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  flex-shrink: 0;
+}
+.hero-brand-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hero-brand-avatar span {
+  font-size: 22px;
+  line-height: 1;
+}
+.hero-brand-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+.hero-brand-name {
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+.hero-brand-tagline {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* ── CATEGORY SELECT DROPDOWN (MOBILE & CLEAN) ──── */
+.cat-dropdown-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.cat-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--steel, var(--iron));
+  border: 1px solid var(--zinc);
+  border-radius: 9999px;
+  padding: 8px 36px 8px 16px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fog, #a1a1aa);
+  cursor: pointer;
+  outline: none;
+  transition: all .18s ease;
+  height: 38px;
+  max-width: 260px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.cat-select:focus, .cat-select.is-active {
+  border-color: var(--red);
+  color: var(--white, #fff);
+  background: rgba(246,0,0,0.08);
+  box-shadow: 0 0 0 2px var(--red-glow, rgba(246,0,0,0.2));
+}
+.cat-select-icon {
+  position: absolute;
+  right: 14px;
+  pointer-events: none;
+  font-size: 11px;
+  color: var(--silver);
+}
+@media (min-width: 769px) {
+  .cat-dropdown-wrap {
+    display: none !important;
+  }
+}
+@media (max-width: 768px) {
+  .cat-pills-desktop {
+    display: none !important;
+  }
+  .cat-dropdown-wrap {
+    display: inline-flex !important;
+    flex: 1;
+    max-width: 100%;
+  }
+  .cat-select {
+    max-width: 100%;
+    width: 100%;
+  }
+  .topbar {
+    padding: 0 14px;
+    height: 58px;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+  .search-wrap {
+    display: none !important;
+  }
+  .search-toggle-btn {
+    display: inline-flex !important;
+  }
+  .topbar-action-btn {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+  }
+  .topbar-action-btn .hide-mobile {
+    display: none !important;
+  }
+  .cart-btn {
+    padding: 7px 12px;
+    height: 36px;
+    font-size: 12px;
+    gap: 6px;
+  }
+  .hero-brand-card {
+    margin-bottom: 12px;
+  }
+}
+
+/* ── PRODUCT CARD RESPONSIVE SPACING & HIERARCHY ── */
+.product-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 5px;
+  min-height: 16px;
+}
+.product-marca-pill {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--silver);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--zinc);
+  padding: 1px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.product-price-box {
+  margin-top: 4px;
+  margin-bottom: 12px;
+}
+.product-price-main {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+.product-card-action {
+  margin-top: auto;
+  width: 100%;
+}
+.btn-out-stock {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--silver);
+  border: 1px solid var(--zinc);
+  border-radius: 999px;
+  opacity: .6;
+  user-select: none;
+}
+@media (max-width: 576px) {
+  .product-body {
+    padding: 10px 10px 12px 10px;
+  }
+  .product-name {
+    font-size: 13.5px;
+    min-height: 34px;
+    margin-bottom: 4px;
+  }
+  .product-price {
+    font-size: 17px;
+  }
+  .product-price-box {
+    margin-bottom: 8px;
+  }
+  .btn-card-add, .btn-personalizar, .qty-control, .btn-out-stock {
+    height: 36px;
+    min-height: 36px;
+    font-size: 12.5px;
+  }
+}
+
 /* ── HERO STRIP ─────────────────────────────────── */
 .hero{
   position:relative;overflow:hidden;
@@ -263,23 +582,21 @@ a.logo{
 /* ── PROMOTIONAL BANNERS 50/50 ──────────────────── */
 .promo-banner{
   position:relative;
-  height:200px;
-  border-radius:12px;
+  min-height:190px;
+  height:auto;
+  border-radius:14px;
   overflow:hidden;
   cursor:pointer;
   border:1px solid var(--zinc);
   transition:all .2s;
   animation:fadeUp .4s ease both;
-  background-color:var(--banner-bg, var(--iron));
+  background-color:var(--banner-bg, var(--steel, var(--iron)));
   background-size:cover;
   background-position:center;
   display:flex;align-items:center;justify-content:center;
-  font-size:48px;
-}
-.promo-banner:hover{
-  border-color:var(--red);
-  transform:translateY(-2px);
-  box-shadow:0 8px 24px rgba(0,0,0,.3),0 0 0 1px var(--red);
+  padding:24px 20px;
+  box-sizing:border-box;
+  box-shadow:0 2px 8px rgba(0,0,0,.02);
 }
 .promo-banner-img{
   position:absolute;inset:0;
@@ -319,9 +636,22 @@ a.logo{
 @media(max-width:768px){
   #banners-container{
     grid-template-columns:1fr;
+    gap:12px;
+    margin-bottom:24px;
   }
-  .promo-banner{height:160px;}
-  .promo-banner-title{font-size:20px;}
+  .promo-banner{
+    min-height:180px;
+    height:auto;
+    padding:20px 16px;
+  }
+  .promo-banner-title{
+    font-size:20px;
+    line-height:1.25;
+    -webkit-line-clamp:3;
+  }
+  .promo-banner-cta{
+    margin-top:10px;
+  }
 }
 
 /* ── PRODUCTS GRID ──────────────────────────────── */
@@ -914,11 +1244,19 @@ a.logo{
 <div class="page">
 
   <!-- Category rail -->
-  <div class="cat-rail" id="cat-rail">
-    <button class="cat-btn active" data-cat="all" onclick="filterCat(this,'all')">
+  <div class="cat-rail" id="cat-rail" role="region" aria-label="Categorías de productos">
+    <button class="cat-btn active" id="btn-cat-all" data-cat="all" onclick="filterCat(this,'all')" aria-label="Ver todos los productos">
       <i class="bi bi-grid-3x3-gap"></i> Todos
     </button>
-    <!-- populated by JS -->
+    <div class="cat-dropdown-wrap" id="cat-dropdown-wrap">
+      <select class="cat-select" id="cat-select-dropdown" onchange="filterCatFromSelect(this.value)" aria-label="Seleccionar categoría">
+        <option value="all">Todas las categorías</option>
+      </select>
+      <i class="bi bi-chevron-down cat-select-icon"></i>
+    </div>
+    <div class="cat-pills-desktop" id="cat-pills-desktop" style="display:contents;">
+      <!-- populated by JS -->
+    </div>
   </div>
 
   <!-- BANNERS PROMOCIONALES 50/50 -->
@@ -1545,9 +1883,17 @@ async function loadSheet() {
     // Build category rail
     const cats = [...new Set(products.map(p => p.cat).filter(Boolean))];
     const rail = document.getElementById('cat-rail');
-    rail.innerHTML = `<button class="cat-btn active" data-cat="all" onclick="filterCat(this,'all')">
-      <i class="bi bi-grid-3x3-gap"></i> Todos</button>` +
-      cats.map(c => `<button class="cat-btn" data-cat="${c}" onclick="filterCat(this,'${c}')">${c}</button>`).join('');
+    const catSelect = document.getElementById('cat-select-dropdown');
+    const catPills = document.getElementById('cat-pills-desktop');
+
+    if (catSelect) {
+      catSelect.innerHTML = `<option value="all">Todas las categorías (${cats.length})</option>` +
+        cats.map(c => `<option value="${c}">${c}</option>`).join('');
+    }
+
+    if (catPills) {
+      catPills.innerHTML = cats.map(c => `<button class="cat-btn" data-cat="${c}" onclick="filterCat(this,'${c}')">${c}</button>`).join('');
+    }
 
     // ← NUEVO: Renderizar banners
     renderBanners(bannerData);
@@ -1656,10 +2002,85 @@ function render() {
 /* ═══════════════════════════════════════════ FILTERS */
 function filterCat(btn, cat) {
   activeCat = cat;
-  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  const allBtn = document.getElementById('btn-cat-all');
+  const catSelect = document.getElementById('cat-select-dropdown');
+
+  if (cat === 'all') {
+    if (allBtn) allBtn.classList.add('active');
+    if (catSelect) {
+      catSelect.value = 'all';
+      catSelect.classList.remove('is-active');
+    }
+  } else {
+    if (btn) {
+      btn.classList.add('active');
+    } else {
+      const matchingBtn = document.querySelector(`.cat-btn[data-cat="${cat}"]`);
+      if (matchingBtn) matchingBtn.classList.add('active');
+    }
+    if (catSelect) {
+      catSelect.value = cat;
+      catSelect.classList.add('is-active');
+    }
+    if (allBtn) allBtn.classList.remove('active');
+  }
   render();
 }
+
+function toggleMobileSearch() {
+  const drawer = document.getElementById('mobile-search-drawer');
+  const btn = document.getElementById('btn-search-toggle');
+  if (!drawer) return;
+  const isOpening = (drawer.style.display === 'none' || !drawer.style.display);
+  if (isOpening) {
+    drawer.style.display = 'block';
+    if (btn) btn.classList.add('is-active');
+    const input = document.getElementById('search-mobile');
+    if (input) {
+      input.value = searchTerm || '';
+      setTimeout(() => input.focus(), 60);
+    }
+  } else {
+    drawer.style.display = 'none';
+    if (btn) btn.classList.remove('is-active');
+  }
+}
+window.toggleMobileSearch = toggleMobileSearch;
+
+function closeMobileSearch() {
+  const drawer = document.getElementById('mobile-search-drawer');
+  const btn = document.getElementById('btn-search-toggle');
+  if (drawer) drawer.style.display = 'none';
+  if (btn) btn.classList.remove('is-active');
+}
+window.closeMobileSearch = closeMobileSearch;
+
+function clearMobileSearch() {
+  const input = document.getElementById('search-mobile');
+  const desktopInput = document.getElementById('search');
+  if (input) input.value = '';
+  if (desktopInput) desktopInput.value = '';
+  onSearch('');
+  closeMobileSearch();
+}
+window.clearMobileSearch = clearMobileSearch;
+
+function syncSearchMobile(val) {
+  const input = document.getElementById('search-mobile');
+  if (input && input.value !== val) input.value = val;
+}
+function syncSearchDesktop(val) {
+  const desktopInput = document.getElementById('search');
+  if (desktopInput && desktopInput.value !== val) desktopInput.value = val;
+}
+window.syncSearchMobile = syncSearchMobile;
+window.syncSearchDesktop = syncSearchDesktop;
+
+function filterCatFromSelect(cat) {
+  filterCat(null, cat);
+}
+window.filterCatFromSelect = filterCatFromSelect;
 function onSearch(val) { searchTerm = val; render(); }
 
 /* ═══════════════════════════════════════════ BANNERS PROMOCIONALES */

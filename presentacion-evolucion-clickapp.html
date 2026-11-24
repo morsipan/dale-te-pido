@@ -439,7 +439,7 @@
         <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding: 20px 0;">
           <div style="display:inline-flex; align-items:center; gap:8px; padding:6px 16px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); border-radius:999px; margin-bottom:18px;">
             <i class="bi bi-rocket-takeoff-fill" style="color:var(--brand-amber); font-size:14px;"></i>
-            <span style="font-family:var(--font-mono); font-size:12px; font-weight:700; color:var(--brand-amber); letter-spacing:0.06em;">MEMORIA DE DESARROLLO INTEGRAL · ACTUALIZADO 23/11/2026 (v4.22)</span>
+            <span style="font-family:var(--font-mono); font-size:12px; font-weight:700; color:var(--brand-amber); letter-spacing:0.06em;">MEMORIA DE DESARROLLO INTEGRAL · ACTUALIZADO 24/11/2026 (v4.23)</span>
           </div>
           
           <h1 style="font-family:var(--font-heading); font-size:clamp(30px, 4vw, 50px); font-weight:800; line-height:1.15; max-width:980px; margin-bottom:14px; background:linear-gradient(135deg, #FFFFFF 30%, #F59E0B 75%, #F60000 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
@@ -2723,6 +2723,50 @@
         </div>
       </section>
 
+      <!-- ETAPA 52: REDISEÑO MOBILE INTEGRAL DE TIENDAS -->
+      <section class="slide" id="slide-52">
+        <span class="slide-badge" style="background:rgba(59,130,246,0.15);border-color:rgba(59,130,246,0.4);color:#60A5FA;"><i class="bi bi-phone-fill"></i> Etapa 52 · Release 24 de Noviembre 2026</span>
+        <h2 class="slide-title">Rediseño Integral de la Experiencia Móvil: Banners Adaptativos, Avatar en Hero, Topbar Ergonómico con Buscador y Dropdown de Categorías</h2>
+        <p class="slide-desc">Optimización profunda de la vista responsive en <code>tienda.html</code> y <code>tienda-demo.html</code>: resolución de colisiones y truncamiento seguro en banners promocionales, desahogo y nueva jerarquía visual en cards de productos, migración del branding al hero strip y barra de búsqueda desplegable bajo demanda.</p>
+
+        <div class="grid-2" style="margin-top:16px; display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+          <div class="card">
+            <div class="card-title" style="color:#60A5FA;"><i class="bi bi-card-image"></i> 1. Banners Promocionales Adaptativos</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Los títulos extensos ya no ocultan el botón CTA ni generan saltos de línea destructivos. Se configuró altura responsiva adaptativa (<code>min-height: 180px; height: auto;</code>) junto a un clamp de 3 líneas con <code>word-break: break-word;</code> para asegurar legibilidad uniforme.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#10B981;"><i class="bi bi-grid-fill"></i> 2. Desahogo y Jerarquía en Tarjetas</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Reestructuración del cuerpo de las cards con <code>.product-meta</code> (categoría y pill de marca), caja de precio aislada (<code>.product-price-box</code>) y anclaje automático inferior de botones (<code>margin-top: auto;</code>), garantizando respiración visual e interactividad táctil sin amontonamiento.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#F59E0B;"><i class="bi bi-shop"></i> 3. Avatar de Empresa en Banner Hero</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Se incorporó el badge flotante <code>#hero-brand-card</code> con avatar/logo de alta definición, nombre comercial y subtítulo por encima de los titulares del hero banner, fortaleciendo la identidad del negocio sin saturar la navegación superior.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#EC4899;"><i class="bi bi-search"></i> 4. Topbar Unificado & Buscador Desplegable</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              En mobile se alinean en un grupo armónico los accesos de <strong>[Lupa]</strong>, <strong>[Nosotros]</strong>, <strong>[FAQs]</strong> y <strong>[Carrito]</strong>. Al tocar la lupa se despliega de forma fluida el drawer <code>#mobile-search-drawer</code> con autofocus, sincronizado en tiempo real con el catálogo.
+            </p>
+          </div>
+
+          <div class="card" style="grid-column: 1 / -1;">
+            <div class="card-title" style="color:#8B5CF6;"><i class="bi bi-menu-button-wide"></i> 5. Selector Desplegable de Categorías Móvil</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Sustitución del desborde horizontal de botones por un selector dropdown nativo y estilizado (<code>#cat-select-dropdown</code>) ubicado estratégicamente al lado del botón <strong>"Todos"</strong>. Ofrece navegación instantánea entre rubros con total sincronización con el botón principal y la vista de escritorio.
+            </p>
+          </div>
+        </div>
+      </section>
+
     </main>
 
     <!-- BOTTOMBAR -->
@@ -2743,7 +2787,7 @@
 
 <script>
   let currentSlide = 1;
-  const totalSlides = document.querySelectorAll('section.slide').length || 51;
+  const totalSlides = document.querySelectorAll('section.slide').length || 52;
 
   function showSlide(index) {
     if (index < 1) index = 1;

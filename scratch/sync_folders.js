@@ -4,6 +4,7 @@ import path from 'path';
 const filesToSync = [
   'dashboard.html',
   'tienda.html',
+  'tienda-demo.html',
   'kit-imprimible.html',
   'api/qr.js',
   // index.html is intentionally NOT synced to root — Vercel serves it as
