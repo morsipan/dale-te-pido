@@ -377,6 +377,26 @@ a.logo{
 }
 
 /* ── PRODUCT CARD RESPONSIVE SPACING & HIERARCHY ── */
+.product-marca-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.product-cat-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.product-cat {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--silver);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .product-meta {
   display: flex;
   align-items: center;
@@ -1212,14 +1232,42 @@ a.logo{
     <i class="bi bi-search search-icon"></i>
     <input type="text" class="search-input" id="search"
       placeholder="Buscar herramientas, materiales..."
-      oninput="onSearch(this.value)"/>
+      aria-label="Buscar productos en el catálogo"
+      oninput="onSearch(this.value); syncSearchMobile(this.value);"/>
   </div>
 
-  <button class="cart-btn" onclick="openCart()">
-    <i class="bi bi-bag"></i>
-    <span class="cart-n" id="cart-n">0</span>
-  </button>
+  <div class="topbar-actions">
+    <button class="topbar-action-btn search-toggle-btn" id="btn-search-toggle" onclick="toggleMobileSearch()" aria-label="Buscar productos" title="Buscar">
+      <i class="bi bi-search"></i>
+    </button>
+    <a href="nosotros-test.html" class="topbar-action-btn nav-link-item" aria-label="Ver información sobre nosotros" title="Nosotros">
+      <i class="bi bi-info-circle"></i>
+      <span class="hide-mobile">Nosotros</span>
+    </a>
+    <a href="faq-test.html" class="topbar-action-btn nav-link-item" aria-label="Ver preguntas frecuentes" title="FAQs">
+      <i class="bi bi-question-circle"></i>
+      <span class="hide-mobile">FAQs</span>
+    </a>
+    <button class="cart-btn" onclick="openCart()" aria-label="Abrir carrito de compras">
+      <i class="bi bi-bag" aria-hidden="true"></i>
+      <span class="cart-n" id="cart-n">0</span>
+    </button>
+  </div>
 </nav>
+
+<!-- ── BARRA DE BÚSQUEDA DESPLEGABLE EN MOBILE ── -->
+<div class="mobile-search-drawer" id="mobile-search-drawer" style="display:none;">
+  <div class="mobile-search-inner">
+    <i class="bi bi-search mobile-search-icon"></i>
+    <input type="text" class="mobile-search-input" id="search-mobile"
+      placeholder="Buscar por nombre, categoría, marca..."
+      aria-label="Buscar en el catálogo"
+      oninput="onSearch(this.value); syncSearchDesktop(this.value);"/>
+    <button class="mobile-search-clear" onclick="clearMobileSearch()" aria-label="Cerrar búsqueda">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+</div>
 
 <!-- ── HERO ── -->
 <div class="hero" id="hero">
@@ -1228,6 +1276,17 @@ a.logo{
   <div class="hero-bg" id="hero-stripes"></div>
   <div class="hero-inner">
     <div>
+      <!-- AVATAR DE LA EMPRESA DENTRO DEL BANNER HERO -->
+      <div class="hero-brand-card" id="hero-brand-card">
+        <div class="hero-brand-avatar" id="hero-brand-avatar">
+          <span id="hero-avatar-emoji">🔧</span>
+          <img id="hero-avatar-img" alt="Logo de la tienda" style="display:none;" />
+        </div>
+        <div class="hero-brand-info">
+          <span class="hero-brand-name" id="hero-brand-name">FerreApp</span>
+          <span class="hero-brand-tagline" id="hero-brand-tagline">Tu ferretería digital</span>
+        </div>
+      </div>
       <div class="hero-title" id="hero-title">Tu ferretería<br/><span id="hero-title-span">sin demoras.</span></div>
       <div class="hero-sub" id="hero-sub">Elegí tus productos, armá tu pedido y coordiná por WhatsApp.</div>
       <div class="hero-pills">
@@ -1976,6 +2035,12 @@ function render() {
         <span class="stock-chip ${stockClass}">${stockLabel}</span>
       </div>
       <div class="product-body">
+        ${p.marca ? `<div class="product-marca-row"><span class="product-marca-pill">${p.marca}</span></div>` : ''}
+        <div class="product-cat-row"><span class="product-cat" style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.cat}${flag ? '<span class="origen-flag" style="margin-left:6px;flex-shrink:0;">'+flag+'</span>' : ''}</span></div>
+        <div class="product-name" title="${p.name}">${p.name}</div>
+        <div class="product-price-box">
+          <div class="product-price-main">
+            <span class="product-price-label">      <div class="product-body">
         <div class="product-cat"><span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.cat}</span>${flag?'<span class="origen-flag" style="margin-left:6px;flex-shrink:0;">'+flag+'</span>':''}</div>
         ${p.marca ? `<div class="product-marca"><i class="bi bi-award"></i>${p.marca}</div>` : ''}
         <div class="product-name">${p.name}</div>
@@ -1994,6 +2059,23 @@ function render() {
                    <button type="button" class="qty-btn qty-inc" onclick='changeQtyCard(${JSON.stringify(p.id)},1)'><i class="bi bi-plus"></i></button>
                  </div>`)
             : `<div style="font-size:11px;color:var(--silver);padding:4px 10px;border:1px solid var(--zinc);border-radius:9999px;opacity:.5;">Sin stock</div>`}
+        </div>
+      </div>nbsp;</span>
+            <span class="product-price">${p.price.toLocaleString('es-AR')}</span>
+          </div>
+        </div>
+        <div class="product-card-action">
+          ${p.stock > 0
+            ? ((p.variants && p.variants.length > 0) || (p.modifiers && p.modifiers.length > 0)
+               ? `<button type="button" class="btn-personalizar" style="width:100%;height:38px;border-radius:999px;background:var(--red);color:#fff;border:none;font-weight:700;cursor:pointer;" onclick="event.stopPropagation(); openProductDrawer('${p.id}')">
+                   <i class="bi bi-sliders"></i> Personalizar
+                  </button>`
+               : `<div class="qty-control ${qty > 0 ? 'has-items' : ''}" id="qc-${p.id}" onclick="event.stopPropagation()" style="width:100%;">
+                   <button type="button" class="qty-btn qty-dec" onclick='changeQtyCard(${JSON.stringify(p.id)},-1)'><i class="bi bi-dash"></i></button>
+                   <span class="qty-num">${qty > 0 ? qty : 'Agregar'}</span>
+                   <button type="button" class="qty-btn qty-inc" onclick='changeQtyCard(${JSON.stringify(p.id)},1)'><i class="bi bi-plus"></i></button>
+                 </div>`)
+            : `<div class="btn-out-stock">Sin stock</div>`}
         </div>
       </div>
     </div>`;

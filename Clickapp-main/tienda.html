@@ -478,6 +478,26 @@ a.logo{
 }
 
 /* ── PRODUCT CARD RESPONSIVE SPACING & HIERARCHY ── */
+.product-marca-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.product-cat-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.product-cat {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--silver);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .product-meta {
   display: flex;
   align-items: center;
@@ -815,22 +835,30 @@ a.logo{
 
 @media(max-width:576px){
   .topbar{
-    flex-wrap:wrap;
-    height:auto;
-    padding:12px 16px;
-    gap:10px;
+    flex-wrap:nowrap !important;
+    height:56px !important;
+    padding:0 12px !important;
+    gap:8px !important;
   }
   .search-wrap{
-    order:3;
-    flex:0 0 100%;
-    max-width:100%;
-    margin-top:2px;
+    display:none !important;
   }
-  .cart-btn{
+  .topbar-actions{
+    display:flex !important;
+    align-items:center;
+    gap:6px;
     margin-left:auto;
+  }
+  .hero-inner{
+    padding:24px 16px !important;
+  }
+  .hero-badge{
+    display:none !important;
   }
   .product-name{
     font-size:14px;
+    min-height:36px;
+    margin-bottom:6px;
   }
   .product-price{
     font-size:18px;
@@ -1652,23 +1680,41 @@ body:not(.light-theme) .stock-chip {
     <input type="text" class="search-input" id="search"
       placeholder="Buscar smash burgers, combos..."
       aria-label="Buscar productos en el catálogo"
-      oninput="onSearch(this.value)"/>
+      oninput="onSearch(this.value); syncSearchMobile(this.value);"/>
   </div>
 
-  <div class="nav-links" style="display: flex; gap: 8px; margin-left: 8px; margin-right: 8px; flex-shrink: 0;">
-    <a href="javascript:void(0)" onclick="openPagesDrawer('nosotros')" class="nav-link-item" aria-label="Ver información sobre nosotros">
-      <i class="bi bi-info-circle" style="font-size:16px;" aria-hidden="true"></i> <span class="hide-mobile">Nosotros</span>
+  <div class="topbar-actions">
+    <button class="topbar-action-btn search-toggle-btn" id="btn-search-toggle" onclick="toggleMobileSearch()" aria-label="Buscar productos" title="Buscar">
+      <i class="bi bi-search"></i>
+    </button>
+    <a href="javascript:void(0)" onclick="openPagesDrawer('nosotros')" class="topbar-action-btn nav-link-item" aria-label="Ver información sobre nosotros" title="Nosotros">
+      <i class="bi bi-info-circle"></i>
+      <span class="hide-mobile">Nosotros</span>
     </a>
-    <a href="javascript:void(0)" onclick="openPagesDrawer('faq')" class="nav-link-item" aria-label="Ver preguntas frecuentes">
-      <i class="bi bi-question-circle" style="font-size:16px;" aria-hidden="true"></i> <span class="hide-mobile">FAQs</span>
+    <a href="javascript:void(0)" onclick="openPagesDrawer('faq')" class="topbar-action-btn nav-link-item" aria-label="Ver preguntas frecuentes" title="FAQs">
+      <i class="bi bi-question-circle"></i>
+      <span class="hide-mobile">FAQs</span>
     </a>
+    <button class="cart-btn" onclick="openCart()" aria-label="Abrir carrito de compras">
+      <i class="bi bi-bag" aria-hidden="true"></i>
+      <span class="cart-n" id="cart-n">0</span>
+    </button>
   </div>
-
-  <button class="cart-btn" onclick="openCart()" aria-label="Abrir carrito de compras">
-    <i class="bi bi-bag" aria-hidden="true"></i>
-    <span class="cart-n" id="cart-n">0</span>
-  </button>
 </nav>
+
+<!-- ── BARRA DE BÚSQUEDA DESPLEGABLE EN MOBILE ── -->
+<div class="mobile-search-drawer" id="mobile-search-drawer" style="display:none;">
+  <div class="mobile-search-inner">
+    <i class="bi bi-search mobile-search-icon"></i>
+    <input type="text" class="mobile-search-input" id="search-mobile"
+      placeholder="Buscar por nombre, categoría, marca..."
+      aria-label="Buscar en el catálogo"
+      oninput="onSearch(this.value); syncSearchDesktop(this.value);"/>
+    <button class="mobile-search-clear" onclick="clearMobileSearch()" aria-label="Cerrar búsqueda">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+</div>
 
 <!-- ── BANNERS DE HORARIO / MODO SERENO ── -->
 <div id="night-guard-store-banner" style="display:none; background: linear-gradient(90deg, #1e1b4b, #0f172a); border-bottom: 1px solid rgba(129, 140, 248, 0.35); color: #e0e7ff; padding: 10px 16px; font-size: 13px; font-weight: 500; text-align: center; position: sticky; top: 62px; z-index: 95; backdrop-filter: blur(10px); box-shadow: 0 4px 14px rgba(0,0,0,0.25);">
@@ -1695,6 +1741,17 @@ body:not(.light-theme) .stock-chip {
   <div class="hero-bg" id="hero-stripes"></div>
   <div class="hero-inner">
     <div>
+      <!-- AVATAR DE LA EMPRESA DENTRO DEL BANNER HERO -->
+      <div class="hero-brand-card" id="hero-brand-card">
+        <div class="hero-brand-avatar" id="hero-brand-avatar">
+          <span id="hero-avatar-emoji">🏬</span>
+          <img id="hero-avatar-img" alt="Logo de la tienda" style="display:none;" />
+        </div>
+        <div class="hero-brand-info">
+          <span class="hero-brand-name" id="hero-brand-name">BigHouse</span>
+          <span class="hero-brand-tagline" id="hero-brand-tagline">The Smash Master</span>
+        </div>
+      </div>
       <div class="hero-title" id="hero-title">Bienvenidos a<br/><span id="hero-title-span">nuestra tienda.</span></div>
       <div class="hero-sub" id="hero-sub">Elegí tus productos, armá tu pedido y coordiná por WhatsApp.</div>
       <div class="hero-pills" data-nosnippet>
@@ -1712,10 +1769,18 @@ body:not(.light-theme) .stock-chip {
 
   <!-- Category rail -->
   <div class="cat-rail" id="cat-rail" role="region" aria-label="Categorías de productos" data-nosnippet>
-    <button class="cat-btn active" data-cat="all" onclick="filterCat(this,'all')" aria-label="Ver todos los productos">
+    <button class="cat-btn active" id="btn-cat-all" data-cat="all" onclick="filterCat(this,'all')" aria-label="Ver todos los productos">
       <i class="bi bi-grid-3x3-gap"></i> Todos
     </button>
-    <!-- populated by JS -->
+    <div class="cat-dropdown-wrap" id="cat-dropdown-wrap">
+      <select class="cat-select" id="cat-select-dropdown" onchange="filterCatFromSelect(this.value)" aria-label="Seleccionar categoría">
+        <option value="all">Todas las categorías</option>
+      </select>
+      <i class="bi bi-chevron-down cat-select-icon"></i>
+    </div>
+    <div class="cat-pills-desktop" id="cat-pills-desktop" style="display:contents;">
+      <!-- populated by JS -->
+    </div>
   </div>
 
   <!-- BANNERS PROMOCIONALES 50/50 -->
@@ -2911,10 +2976,8 @@ function render() {
         <span class="stock-chip ${p.stock===0?'out':''}">${p.stock===0?'Sin stock':`Stock: ${p.stock}`}</span>
       </div>
       <div class="product-body">
-        <div class="product-meta">
-          <span class="product-cat">${escapeHTML(p.cat)}${flag ? ' <span class="origen-flag">'+flag+'</span>' : ''}</span>
-          ${p.marca ? `<span class="product-marca-pill">${escapeHTML(p.marca)}</span>` : ''}
-        </div>
+        ${p.marca ? `<div class="product-marca-row"><span class="product-marca-pill">${escapeHTML(p.marca)}</span></div>` : ''}
+        <div class="product-cat-row"><span class="product-cat">${escapeHTML(p.cat)}${flag ? ' <span class="origen-flag">'+flag+'</span>' : ''}</span></div>
         <div class="product-name" title="${escapeHTML(p.name)}">${escapeHTML(p.name)}</div>
         <div class="product-price-box">
           ${(p.price_prev && p.price_prev > p.price) ? `
