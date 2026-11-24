@@ -11778,6 +11778,9 @@
               font: dbCfg.font !== null ? dbCfg.font : (parsedDesign.font || cfg.font || ''),
               fontBody: dbCfg.font_body !== null ? dbCfg.font_body : (parsedDesign.font_body || parsedDesign.fontBody || cfg.fontBody || ''),
               bg: dbCfg.bg !== null ? dbCfg.bg : (parsedDesign.bg || cfg.bg || ''),
+              heroBgColor: parsedDesign.heroBgColor || cfg.heroBgColor || '#0E0E0E',
+              heroImgOpacity: parsedDesign.heroImgOpacity != null ? parsedDesign.heroImgOpacity : (cfg.heroImgOpacity != null ? cfg.heroImgOpacity : 100),
+              heroOverlay: parsedDesign.heroOverlay || cfg.heroOverlay || 'rgba(0,0,0,0.48)',
               subrubro: dbCfg.subrubro !== null ? dbCfg.subrubro : (parsedDesign.subrubro || ''),
               password: dbCfg.password || parsedDesign.password || '',
               admin_email: dbCfg.admin_email || parsedDesign.admin_email || '',
@@ -11813,6 +11816,16 @@
             cfg = { ...cfg, ...remoteStoreCfg };
             localStorage.setItem('storeapp_cfg_' + STORE_ID, JSON.stringify(cfg));
             try { localStorage.removeItem('storeapp_cfg'); } catch(e) {}
+            if (remoteStoreCfg.bg) {
+              localStorage.setItem('storeapp_hero_img_' + STORE_ID, remoteStoreCfg.bg);
+            } else {
+              localStorage.removeItem('storeapp_hero_img_' + STORE_ID);
+            }
+            if (remoteStoreCfg.banner_mobile_img) {
+              localStorage.setItem('storeapp_hero_mobile_img_' + STORE_ID, remoteStoreCfg.banner_mobile_img);
+            } else {
+              localStorage.removeItem('storeapp_hero_mobile_img_' + STORE_ID);
+            }
 
             // Intentar cargar credenciales desde la tabla dedicada store_credentials sólo si está explícitamente habilitado
             let storeCreds = null;
@@ -12490,7 +12503,7 @@
       // Store background
       const s = document.getElementById('prev-store');
       if (s) {
-        s.style.background = cfg.heroBgColor || cfg.bg || t.bg;
+        s.style.background = t.bg;
         s.style.fontFamily = `'${cfg.font || 'Barlow Condensed'}', sans-serif`;
       }
 
@@ -12988,7 +13001,28 @@
           dataToSave.email = JSON.stringify(parsedEmail);
           dataToSave.design_settings = parsedEmail;
 
-
+          const currentBillingInfo = (typeof dbRow?.billing_info === 'object' && dbRow?.billing_info !== null) ? dbRow.billing_info : {};
+          dataToSave.billing_info = {
+            ...currentBillingInfo,
+            design: {
+              ...(currentBillingInfo.design || {}),
+              bg: parsedEmail.bg || cfgObj.bg || '',
+              banner_mobile_img: parsedEmail.banner_mobile_img || cfgObj.banner_mobile_img || '',
+              h1: parsedEmail.h1 || '',
+              h2: parsedEmail.h2 || '',
+              desc: parsedEmail.desc || '',
+              h1Color: parsedEmail.h1Color || '#FFFFFF',
+              h2Color: parsedEmail.h2Color || '#D72638',
+              descColor: parsedEmail.descColor || '#E0E0E0',
+              emoji: parsedEmail.emoji || '🏪',
+              theme: parsedEmail.theme || 'dark',
+              font: parsedEmail.font || '',
+              fontBody: parsedEmail.fontBody || '',
+              heroBgColor: parsedEmail.heroBgColor || '#0E0E0E',
+              heroImgOpacity: parsedEmail.heroImgOpacity != null ? parsedEmail.heroImgOpacity : 100,
+              heroOverlay: parsedEmail.heroOverlay || 'rgba(0,0,0,0.48)'
+            }
+          };
 
           // Guardar en las nuevas columnas atómicas dedicadas
           dataToSave.admin_email = parsedEmail.admin_email;
@@ -13334,29 +13368,54 @@
 
       localStorage.setItem('storeapp_hero_img_' + STORE_ID, url);
       cfg.bg = url;
-      prev.src = url;
-      wrap.style.display = 'block';
+      if (prev) prev.src = url;
+      if (wrap) wrap.style.display = 'block';
+      highlightActiveBgSample('');
+      const statusEl = document.getElementById('design-bg-status') || document.getElementById('banners-status');
+      if (statusEl) {
+        statusEl.style.color = 'var(--silver)';
+        statusEl.textContent = 'Imagen cargada. Recuerda hacer clic en "Guardar fondo y estética" para confirmar.';
+      }
       previewUpdate();
     }
 
-    function selectBgSample(url) {
-      localStorage.setItem('storeapp_hero_img_' + STORE_ID, url);
-      localStorage.setItem('storeapp_hero_img_' + STORE_ID, url);
-      cfg.bg = url;
-      const wrap = document.getElementById('hero-img-preview-wrap');
-      const prev = document.getElementById('hero-img-preview');
-      if (prev) prev.src = url;
-      if (wrap) wrap.style.display = 'block';
-
-      // Highlight active card
+    function highlightActiveBgSample(url) {
+      if (!url) {
+        document.querySelectorAll('.bg-sample-card').forEach(card => card.classList.remove('active'));
+        return;
+      }
+      const cleanUrl = String(url).trim().toLowerCase();
+      const filename = cleanUrl.split('/').pop().split('?')[0];
       document.querySelectorAll('.bg-sample-card').forEach(card => {
         const img = card.querySelector('img');
-        if (img && img.getAttribute('src') === url) {
+        const src = (img ? (img.getAttribute('src') || '') : '').toLowerCase();
+        const cardFilename = src.split('/').pop().split('?')[0];
+        if (src && (cleanUrl === src || cleanUrl.endsWith(src) || src.endsWith(cleanUrl) || (filename && filename === cardFilename))) {
           card.classList.add('active');
         } else {
           card.classList.remove('active');
         }
       });
+    }
+    window.highlightActiveBgSample = highlightActiveBgSample;
+
+    function selectBgSample(url) {
+      const fullUrl = (url && url.startsWith('/')) ? ('https://daletepido.com.ar' + url) : url;
+      localStorage.setItem('storeapp_hero_img_' + STORE_ID, fullUrl);
+      cfg.bg = fullUrl;
+      const wrap = document.getElementById('hero-img-preview-wrap');
+      const prev = document.getElementById('hero-img-preview');
+      if (prev) prev.src = fullUrl;
+      if (wrap) wrap.style.display = 'block';
+
+      // Highlight active card
+      highlightActiveBgSample(fullUrl);
+
+      const statusEl = document.getElementById('design-bg-status') || document.getElementById('banners-status');
+      if (statusEl) {
+        statusEl.style.color = 'var(--silver)';
+        statusEl.textContent = 'Fondo seleccionado. Haz clic en "Guardar fondo y estética" para aplicar.';
+      }
 
       if (typeof previewUpdate === 'function') previewUpdate();
     }
@@ -13370,6 +13429,12 @@
       if (wrap) wrap.style.display = 'none';
       const prev = document.getElementById('hero-img-preview');
       if (prev) prev.src = '';
+      highlightActiveBgSample('');
+      const statusEl = document.getElementById('design-bg-status') || document.getElementById('banners-status');
+      if (statusEl) {
+        statusEl.style.color = 'var(--silver)';
+        statusEl.textContent = 'Fondo eliminado. Haz clic en "Guardar fondo y estética" para confirmar.';
+      }
       previewUpdate();
     }
     window.removeHeroImg = removeHeroImg;
@@ -13503,20 +13568,15 @@
       const prevOverlay = document.getElementById('hero-img-preview-overlay');
       if (prevOverlay && cfg.heroOverlay) prevOverlay.style.background = cfg.heroOverlay;
 
-      const saved = cfg.bg || localStorage.getItem('storeapp_hero_img_' + STORE_ID) || localStorage.getItem('storeapp_hero_img_' + STORE_ID);
+      const saved = cfg.bg || localStorage.getItem('storeapp_hero_img_' + STORE_ID);
       if (saved) {
         if (prev) prev.src = saved;
         if (wrap) wrap.style.display = 'block';
-
-        // Highlight card if saved matches a preset sample
-        document.querySelectorAll('.bg-sample-card').forEach(card => {
-          const img = card.querySelector('img');
-          if (img && img.getAttribute('src') === saved) {
-            card.classList.add('active');
-          } else {
-            card.classList.remove('active');
-          }
-        });
+        highlightActiveBgSample(saved);
+      } else {
+        if (prev) prev.src = '';
+        if (wrap) wrap.style.display = 'none';
+        highlightActiveBgSample('');
       }
 
       const savedMobile = cfg.banner_mobile_img || localStorage.getItem('storeapp_hero_mobile_img_' + STORE_ID) || localStorage.getItem('storeapp_hero_mobile_img');
@@ -13696,15 +13756,22 @@
             if (document.getElementById('banner2-bg')) document.getElementById('banner2-bg').value = parsedEmail.banner2_bg || r.banner2_bg || '#1C1C1E';
             if (document.getElementById('banner2-active')) document.getElementById('banner2-active').checked = parsedEmail.banner2_active !== false;
 
+            const heroWrap = document.getElementById('hero-img-preview-wrap');
+            const heroPrev = document.getElementById('hero-img-preview');
             if (parsedEmail.bg) {
               cfg.bg = parsedEmail.bg;
               localStorage.setItem('storeapp_hero_img_' + STORE_ID, cfg.bg);
-              const heroWrap = document.getElementById('hero-img-preview-wrap');
-              const heroPrev = document.getElementById('hero-img-preview');
               if (heroWrap && heroPrev) {
                 heroPrev.src = cfg.bg;
                 heroWrap.style.display = 'block';
               }
+              highlightActiveBgSample(cfg.bg);
+            } else {
+              cfg.bg = '';
+              localStorage.removeItem('storeapp_hero_img_' + STORE_ID);
+              if (heroPrev) heroPrev.src = '';
+              if (heroWrap) heroWrap.style.display = 'none';
+              highlightActiveBgSample('');
             }
 
             if (parsedEmail.heroBgColor || r.heroBgColor) {
@@ -13714,6 +13781,15 @@
             if (parsedEmail.heroImgOpacity != null) {
               cfg.heroImgOpacity = parsedEmail.heroImgOpacity;
               updateHeroImgOpacity(cfg.heroImgOpacity);
+            }
+            if (parsedEmail.heroOverlay) {
+              cfg.heroOverlay = parsedEmail.heroOverlay;
+              const ovMatch = parsedEmail.heroOverlay.match(/[\d.]+/);
+              if (ovMatch) {
+                const ovVal = Math.round(parseFloat(ovMatch[0]) * 100);
+                if (document.getElementById('cfg-overlay')) document.getElementById('cfg-overlay').value = ovVal;
+                if (document.getElementById('overlay-val')) document.getElementById('overlay-val').textContent = ovVal + '%';
+              }
             }
             if (parsedEmail.h1Color) {
               cfg.h1Color = parsedEmail.h1Color;
@@ -13728,16 +13804,24 @@
               updateBannerTextColor('desc', cfg.descColor);
             }
 
+            if (document.getElementById('cfg-h1')) document.getElementById('cfg-h1').value = parsedEmail.h1 || r.h1 || cfg.h1 || '';
+            if (document.getElementById('cfg-h2')) document.getElementById('cfg-h2').value = parsedEmail.h2 || r.h2 || cfg.h2 || '';
+            if (document.getElementById('cfg-desc')) document.getElementById('cfg-desc').value = parsedEmail.desc || r.desc || cfg.desc || '';
+
+            const mWrap = document.getElementById('hero-mobile-img-preview-wrap');
+            const mPrev = document.getElementById('hero-mobile-img-preview');
             if (parsedEmail.banner_mobile_img) {
               cfg.banner_mobile_img = parsedEmail.banner_mobile_img;
               localStorage.setItem('storeapp_hero_mobile_img_' + STORE_ID, cfg.banner_mobile_img);
-              localStorage.setItem('storeapp_hero_mobile_img', cfg.banner_mobile_img);
-              const mWrap = document.getElementById('hero-mobile-img-preview-wrap');
-              const mPrev = document.getElementById('hero-mobile-img-preview');
               if (mWrap && mPrev) {
                 mPrev.src = cfg.banner_mobile_img;
                 mWrap.style.display = 'block';
               }
+            } else {
+              cfg.banner_mobile_img = '';
+              localStorage.removeItem('storeapp_hero_mobile_img_' + STORE_ID);
+              if (mPrev) mPrev.src = '';
+              if (mWrap) mWrap.style.display = 'none';
             }
 
             if (parsedEmail.brand_style || r.brand_style) {
@@ -21912,55 +21996,6 @@ Solo especificaciones técnicas clave. Sin precio. Sin emojis. En español argen
       const mRep = document.getElementById('m-repartidores');
       if (mRep) {
         mRep.textContent = (window.currentPickups || []).filter(p => p.active !== false).length;
-      }
-    }
-
-    async function loadBannersConfig() {
-      const bannerData = JSON.parse(localStorage.getItem(`storeapp_banners_${STORE_ID}`) || localStorage.getItem('storeapp_banners_' + STORE_ID) || '{}');
-      const b1 = bannerData.banner1 || {};
-      const b2 = bannerData.banner2 || {};
-
-      const b1Active = document.getElementById('banner1-active'); if (b1Active) b1Active.checked = b1.active !== false;
-      const b2Active = document.getElementById('banner2-active'); if (b2Active) b2Active.checked = b2.active !== false;
-
-      const b1Label = document.getElementById('banner1-label'); if (b1Label) b1Label.value = b1.label || '';
-      const b1Title = document.getElementById('banner1-title'); if (b1Title) b1Title.value = b1.title || '';
-      const b1Img = document.getElementById('banner1-img'); if (b1Img) b1Img.value = b1.img || '';
-      const b1BgEl = document.getElementById('banner1-bg'); if (b1BgEl && b1.bg) b1BgEl.value = b1.bg;
-      const b1Cat = document.getElementById('banner1-cat');
-
-      const b2Label = document.getElementById('banner2-label'); if (b2Label) b2Label.value = b2.label || '';
-      const b2Title = document.getElementById('banner2-title'); if (b2Title) b2Title.value = b2.title || '';
-      const b2Img = document.getElementById('banner2-img'); if (b2Img) b2Img.value = b2.img || '';
-      const b2BgEl = document.getElementById('banner2-bg'); if (b2BgEl && b2.bg) b2BgEl.value = b2.bg;
-      const b2Cat = document.getElementById('banner2-cat');
-
-      try {
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/categories?store_id=eq.${encodeURIComponent(STORE_ID)}&order=display_order.asc`, {
-          headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
-        });
-        if (res.ok) {
-          const cats = await res.json();
-          let opts = '<option value="">(Ninguna)</option>';
-          opts += cats.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-          if (b1Cat) { b1Cat.innerHTML = opts; b1Cat.value = b1.cat || ''; }
-          if (b2Cat) { b2Cat.innerHTML = opts; b2Cat.value = b2.cat || ''; }
-        } else {
-          if (b1Cat) b1Cat.value = b1.cat || '';
-          if (b2Cat) b2Cat.value = b2.cat || '';
-        }
-      } catch (e) {
-        console.warn("No se pudieron cargar categorías para banners", e);
-        if (b1Cat) b1Cat.value = b1.cat || '';
-        if (b2Cat) b2Cat.value = b2.cat || '';
-      }
-
-      if (typeof previewBanner === 'function') {
-        previewBanner('banner1');
-        previewBanner('banner2');
-      }
-      if (typeof setStatusMsg === 'function') {
-        setStatusMsg('banners-status', 'ok', 'Datos cargados');
       }
     }
 

@@ -1204,6 +1204,7 @@ function optimizeImg(url, width = null, height = null) {
   url = url.trim();
   if (!url) return '';
   if (url.startsWith('data:')) return url;
+  if (url.startsWith('/bgd-samples/')) return 'https://daletepido.com.ar' + url;
   if (url.includes('res.cloudinary.com') && url.includes('/upload/')) {
     if (!url.includes('/upload/f_')) {
       let params = 'f_webp,q_auto';

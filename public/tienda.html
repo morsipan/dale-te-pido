@@ -1828,6 +1828,7 @@ function optimizeImg(url, width = null, height = null) {
   url = url.trim();
   if (!url) return '';
   if (url.startsWith('data:')) return url;
+  if (url.startsWith('/bgd-samples/')) return 'https://daletepido.com.ar' + url;
 
   // 1. Unsplash IDs o URLs completas
   if (url.startsWith('photo-')) {
@@ -2265,9 +2266,13 @@ async function loadSheet() {
       CFG.bannerMobileImg = parsedDesign.banner_mobile_img || parsedDesign.bannerMobileImg || CFG.bannerMobileImg || '';
       if (CFG.bg) {
         try { localStorage.setItem('storeapp_hero_img_' + STORE_ID, CFG.bg); } catch(e) {}
+      } else {
+        try { localStorage.removeItem('storeapp_hero_img_' + STORE_ID); } catch(e) {}
       }
       if (CFG.bannerMobileImg) {
         try { localStorage.setItem('storeapp_hero_mobile_img_' + STORE_ID, CFG.bannerMobileImg); } catch(e) {}
+      } else {
+        try { localStorage.removeItem('storeapp_hero_mobile_img_' + STORE_ID); } catch(e) {}
       }
       CFG.logo = cfg.logo_url || parsedDesign.logo || CFG.logo || '';
       CFG.heroBgColor = parsedDesign.heroBgColor || CFG.heroBgColor || '#0E0E0E';
@@ -4414,8 +4419,8 @@ function applyStoredConfig() {
   const heroBg = document.getElementById('hero-img-bg');
   const heroOverlay = document.getElementById('hero-overlay');
   const heroStripes = document.getElementById('hero-stripes');
-  const heroImgUrl = (localStorage.getItem(`storeapp_hero_img_${STORE_ID}`) || cfg.bg || CFG.bg || '').trim();
-  const heroMobileImgUrl = (localStorage.getItem(`storeapp_hero_mobile_img_${STORE_ID}`) || cfg.banner_mobile_img || CFG.bannerMobileImg || '').trim();
+  const heroImgUrl = (CFG.bg !== undefined && CFG.bg !== null ? CFG.bg : (cfg.bg || localStorage.getItem(storeapp_hero_img_) || '')).trim();
+  const heroMobileImgUrl = (CFG.bannerMobileImg !== undefined && CFG.bannerMobileImg !== null ? CFG.bannerMobileImg : (cfg.banner_mobile_img || localStorage.getItem(storeapp_hero_mobile_img_) || '')).trim();
   const heroBgColor = cfg.heroBgColor || CFG.heroBgColor || '#0E0E0E';
   const heroImgOpacity = (cfg.heroImgOpacity != null ? Number(cfg.heroImgOpacity) : (CFG.heroImgOpacity != null ? Number(CFG.heroImgOpacity) : 100)) / 100;
 

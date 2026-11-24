@@ -2686,6 +2686,43 @@
         </div>
       </section>
 
+      <!-- SLIDE 51: REPARACIÓN & NORMALIZACIÓN DE SELECCIÓN DE FONDOS DE TIENDAS -->
+      <section class="slide" id="slide-51">
+        <span class="slide-badge" style="background:rgba(16,185,129,0.15);border-color:rgba(16,185,129,0.4);color:#10B981;"><i class="bi bi-palette-fill"></i> Etapa 51 · Release 24 de Noviembre 2026</span>
+        <h2 class="slide-title">Saneamiento y Normalización Integral del Selector de Fondos Predeterminados, Previsualización y Sincronización</h2>
+        <p class="slide-desc">Resolución integral de anomalías en el selector de fondos y estética del catálogo: eliminación de funciones duplicadas que truncaban la carga desde Supabase, normalización de URLs absolutas en presets y sincronización bidireccional fiable.</p>
+
+        <div class="grid-2" style="margin-top:16px; display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+          <div class="card">
+            <div class="card-title" style="color:#EF4444;"><i class="bi bi-bug-fill"></i> Causa Raíz: Sobreescritura por loadBannersConfig Duplicada</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Existía una definición incompleta y residual de <code>loadBannersConfig()</code> que sobrescribía el cargador maestro de Supabase al ingresar a la sección de diseño del catálogo, descartando la lectura de <code>billing_info.design.bg</code> y reiniciando el estado visual.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#10B981;"><i class="bi bi-check-circle-fill"></i> Resaltado Reactivo &amp; Rutas Absolutas en Presets</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Los 12 fondos predeterminados (<code>/bgd-samples/...</code>) ahora se normalizan a la URL pública canónica y se validan con la función <code>highlightActiveBgSample()</code>, iluminando con borde activo la tarjeta seleccionada tanto al hacer clic como al reingresar al panel.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#3B82F6;"><i class="bi bi-phone-fill"></i> Corrección de Previsualización en Vivo de la Tienda</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              En <code>dashboard.html</code>, el marco de previsualización <code>#prev-store</code> recibía erróneamente la URL de la imagen en la propiedad <code>background</code> de color, rompiendo los estilos. Se desacopló la imagen hacia <code>#prev-hero-img</code>, logrando fidelidad inmediata de renderizado.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#8B5CF6;"><i class="bi bi-database-check"></i> Persistencia Garantizada en Supabase &amp; Limpieza de Caché</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Tanto <code>saveBannersConfig()</code> como <code>syncStoreConfigToSupabase()</code> aseguran el guardado estricto en <code>company_settings.billing_info.design.bg</code>. Al quitar el fondo o cargar una imagen vacía, <code>localStorage</code> se purga limpiamente evitando persistencias fantasma en <code>tienda.html</code>.
+            </p>
+          </div>
+        </div>
+      </section>
+
     </main>
 
     <!-- BOTTOMBAR -->
@@ -2697,7 +2734,7 @@
         <div class="progress-fill" id="progress-fill"></div>
       </div>
       <div>
-        Dale! Te Pido © 2026 · Versión 4.31 100% Hero Covers Audited & Certified · Actualizado 23/11/2026
+        Dale! Te Pido © 2026 · Versión 4.32 Store Background Selector & Live Preview Certified · Actualizado 24/11/2026
       </div>
     </footer>
 
@@ -2706,7 +2743,7 @@
 
 <script>
   let currentSlide = 1;
-  const totalSlides = 49;
+  const totalSlides = document.querySelectorAll('section.slide').length || 51;
 
   function showSlide(index) {
     if (index < 1) index = 1;
