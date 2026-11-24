@@ -2802,6 +2802,13 @@
               Estratificación limpia de capas en el hero banner (<code>.hero-img-bg { z-index: 1; }</code>, <code>.hero-overlay { z-index: 2; }</code>, <code>.hero-inner { z-index: 3; }</code>), evitando superposiciones indebidas y asegurando que las imágenes panorámicas y móviles se luzcan con máximo impacto visual.
             </p>
           </div>
+
+          <div class="card" style="grid-column: 1 / -1;">
+            <div class="card-title" style="color:#8B5CF6;"><i class="bi bi-layout-text-window-reverse"></i> 5. Desduplicación del Avatar en Topbar Móvil</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Al residir la identidad y el avatar de la tienda dentro del banner hero sobre los textos principales, se eliminó la duplicidad en el navbar superior en vista móvil (<code>.topbar .logo-icon, .topbar #logo-img { display: none !important; }</code>). El topbar móvil queda limpio y dedicado exclusivamente al nombre de la tienda y las acciones directas de navegación (<strong>[Lupa]</strong>, <strong>[Nosotros]</strong>, <strong>[FAQs]</strong> y <strong>[Carrito]</strong>).
+            </p>
+          </div>
         </div>
       </section>
 

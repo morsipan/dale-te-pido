@@ -451,6 +451,25 @@ a.logo{
     height: 58px;
     gap: 8px;
     flex-wrap: nowrap;
+    justify-content: space-between;
+  }
+  /* En mobile el avatar de marca vive dentro del banner hero, se oculta del navbar superior para evitar duplicidad y desahogar la barra */
+  .topbar .logo-icon,
+  .topbar #logo-img {
+    display: none !important;
+  }
+  .topbar .logo {
+    gap: 0 !important;
+    max-width: calc(100% - 180px);
+    overflow: hidden;
+  }
+  .topbar .logo-title,
+  .topbar #logo-text {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .search-wrap {
     display: none !important;
