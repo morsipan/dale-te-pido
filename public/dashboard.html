@@ -11766,18 +11766,18 @@
               horario: dbCfg.horario || '',
               rubro: dbCfg.rubro || '',
               logo: dbCfg.logo_url || cfg.logo || '',
-              h1: dbCfg.h1 !== null ? dbCfg.h1 : (parsedDesign.h1 || cfg.h1 || ''),
-              h2: dbCfg.h2 !== null ? dbCfg.h2 : (parsedDesign.h2 || cfg.h2 || ''),
-              desc: dbCfg.desc !== null ? dbCfg.desc : (parsedDesign.desc || cfg.desc || ''),
+              h1: (dbCfg.h1 && dbCfg.h1.trim()) || (parsedDesign.h1 && parsedDesign.h1.trim()) || cfg.h1 || '',
+              h2: (dbCfg.h2 && dbCfg.h2.trim()) || (parsedDesign.h2 && parsedDesign.h2.trim()) || cfg.h2 || '',
+              desc: (dbCfg.desc && dbCfg.desc.trim()) || (parsedDesign.desc && parsedDesign.desc.trim()) || cfg.desc || '',
               h1Color: parsedDesign.h1Color || cfg.h1Color || '#FFFFFF',
               h2Color: parsedDesign.h2Color || cfg.h2Color || dbCfg.primary_color || cfg.color || '#D72638',
               descColor: parsedDesign.descColor || cfg.descColor || '#E0E0E0',
-              banner_mobile_img: parsedDesign.banner_mobile_img || cfg.banner_mobile_img || '',
-              emoji: dbCfg.emoji !== null ? dbCfg.emoji : (parsedDesign.emoji || cfg.emoji || '🏪'),
-              theme: dbCfg.theme !== null ? dbCfg.theme : (parsedDesign.theme || cfg.theme || 'dark'),
-              font: dbCfg.font !== null ? dbCfg.font : (parsedDesign.font || cfg.font || ''),
-              fontBody: dbCfg.font_body !== null ? dbCfg.font_body : (parsedDesign.font_body || parsedDesign.fontBody || cfg.fontBody || ''),
-              bg: dbCfg.bg !== null ? dbCfg.bg : (parsedDesign.bg || cfg.bg || ''),
+              banner_mobile_img: (parsedDesign.banner_mobile_img || cfg.banner_mobile_img || '').trim(),
+              emoji: (dbCfg.emoji && dbCfg.emoji.trim()) || (parsedDesign.emoji && parsedDesign.emoji.trim()) || cfg.emoji || '🏪',
+              theme: (dbCfg.theme && dbCfg.theme.trim()) || (parsedDesign.theme && parsedDesign.theme.trim()) || cfg.theme || 'dark',
+              font: (dbCfg.font && dbCfg.font.trim()) || (parsedDesign.font && parsedDesign.font.trim()) || cfg.font || '',
+              fontBody: (parsedDesign.font_body || parsedDesign.fontBody || cfg.fontBody || '').trim(),
+              bg: (dbCfg.bg && dbCfg.bg.trim()) || (parsedDesign.bg && parsedDesign.bg.trim()) || cfg.bg || '',
               heroBgColor: parsedDesign.heroBgColor || cfg.heroBgColor || '#0E0E0E',
               heroImgOpacity: parsedDesign.heroImgOpacity != null ? parsedDesign.heroImgOpacity : (cfg.heroImgOpacity != null ? cfg.heroImgOpacity : 100),
               heroOverlay: parsedDesign.heroOverlay || cfg.heroOverlay || 'rgba(0,0,0,0.48)',
@@ -13938,6 +13938,7 @@
             parsedEmail.banner2_active = bannerData.banner2.active;
 
             const currentBillingInfo = (typeof dbRow.billing_info === 'object' && dbRow.billing_info !== null) ? dbRow.billing_info : {};
+            const heroOverlayVal = cfg.heroOverlay || ('rgba(0,0,0,' + ((document.getElementById('cfg-overlay')?.value || 48) / 100) + ')');
             const updatedBillingInfo = {
               ...currentBillingInfo,
               design: {
@@ -13952,6 +13953,7 @@
                 descColor: descColorVal,
                 heroBgColor: heroBgColorVal,
                 heroImgOpacity: heroImgOpacityVal,
+                heroOverlay: heroOverlayVal,
                 banner_mode: bannerData.mode,
                 banner1_bg: bannerData.banner1.bg,
                 banner1_active: bannerData.banner1.active,

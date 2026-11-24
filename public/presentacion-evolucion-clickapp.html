@@ -439,7 +439,7 @@
         <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding: 20px 0;">
           <div style="display:inline-flex; align-items:center; gap:8px; padding:6px 16px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); border-radius:999px; margin-bottom:18px;">
             <i class="bi bi-rocket-takeoff-fill" style="color:var(--brand-amber); font-size:14px;"></i>
-            <span style="font-family:var(--font-mono); font-size:12px; font-weight:700; color:var(--brand-amber); letter-spacing:0.06em;">MEMORIA DE DESARROLLO INTEGRAL · ACTUALIZADO 24/11/2026 (v4.23)</span>
+            <span style="font-family:var(--font-mono); font-size:12px; font-weight:700; color:var(--brand-amber); letter-spacing:0.06em;">MEMORIA DE DESARROLLO INTEGRAL · ACTUALIZADO 24/11/2026 (v4.24)</span>
           </div>
           
           <h1 style="font-family:var(--font-heading); font-size:clamp(30px, 4vw, 50px); font-weight:800; line-height:1.15; max-width:980px; margin-bottom:14px; background:linear-gradient(135deg, #FFFFFF 30%, #F59E0B 75%, #F60000 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
@@ -2767,6 +2767,44 @@
         </div>
       </section>
 
+    
+      <!-- ETAPA 53: SINCRONIZACIÓN UNIVERSAL DE FONDOS Y PORTADAS PARA TODAS LAS TIENDAS -->
+      <section class="slide" id="slide-53">
+        <span class="slide-badge" style="background:rgba(16,185,129,0.15);border-color:rgba(16,185,129,0.4);color:#34D399;"><i class="bi bi-images"></i> Etapa 53 · Release 24 de Noviembre 2026</span>
+        <h2 class="slide-title">Sincronización Universal de Fondos y Portadas para Todas las Tiendas, Jerarquía Marca > Categoría en Cards y Blindaje en Dashboard</h2>
+        <p class="slide-desc">Resolución integral de la visualización de imágenes de portada y estética en todo el catálogo multi-tenant (Polo, BigHouse, FerreNow, Lugones Silva, Kiosco Julio, TodoListo, etc.), orden estricto de metadatos en productos y corrección en la persistencia del panel de control.</p>
+
+        <div class="grid-2" style="margin-top:16px; display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+          <div class="card">
+            <div class="card-title" style="color:#34D399;"><i class="bi bi-check-circle-fill"></i> 1. Sincronización Universal de Fondos</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Cada comercio carga de forma autónoma su fondo de portada desde Supabase (<code>billing_info.design.bg</code>). Se neutralizaron fallbacks residuales que forzaban la estética de una sola tienda, garantizando identidad visual inmediata para todos los negocios activos.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#F59E0B;"><i class="bi bi-tags-fill"></i> 2. Jerarquía Estricta: Marca sobre Categoría</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              El cuerpo de cada tarjeta de producto adopta la secuencia mandataria: <strong>1. Marca</strong> (pill destacado superior), <strong>2. Categoría</strong>, <strong>3. Título</strong>, <strong>4. Precio</strong> y <strong>5. Botón de Acción/CTA</strong>, optimizando la lectura rápida en dispositivos táctiles.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#60A5FA;"><i class="bi bi-palette-fill"></i> 3. Blindaje de Selección de Fondos en Dashboard</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Corrección del selector de fondos de muestra y subida de archivos en <code>dashboard.html</code>: se erradicó la evaluación estricta <code>dbCfg.bg !== null</code> que sobreescribía el valor con <code>undefined</code>, permitiendo guardar la configuración de fondo, opacidad y overlay con confirmación inmediata en la nube (HTTP 200).
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="color:#EC4899;"><i class="bi bi-layers-fill"></i> 4. Apilamiento Visual y Capas Hero (Z-Index)</div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:6px;">
+              Estratificación limpia de capas en el hero banner (<code>.hero-img-bg { z-index: 1; }</code>, <code>.hero-overlay { z-index: 2; }</code>, <code>.hero-inner { z-index: 3; }</code>), evitando superposiciones indebidas y asegurando que las imágenes panorámicas y móviles se luzcan con máximo impacto visual.
+            </p>
+          </div>
+        </div>
+      </section>
+
     </main>
 
     <!-- BOTTOMBAR -->
@@ -2787,7 +2825,7 @@
 
 <script>
   let currentSlide = 1;
-  const totalSlides = document.querySelectorAll('section.slide').length || 52;
+  const totalSlides = document.querySelectorAll('section.slide').length || 53;
 
   function showSlide(index) {
     if (index < 1) index = 1;

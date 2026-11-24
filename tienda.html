@@ -1671,14 +1671,14 @@ body:not(.light-theme) .stock-chip {
   <a href="#" class="logo" aria-label="Página de inicio de la tienda">
     <span class="logo-icon" id="logo-icon"><i class="bi bi-shop"></i></span>
     <img id="logo-img" alt="Logo de la tienda" style="display:none; height:36px; width:36px; object-fit:cover; border-radius:8px; flex-shrink:0; box-shadow:0 2px 8px rgba(0,0,0,0.3);"/>
-    <span id="logo-text" class="logo-title">BigHouse</span>
+    <span id="logo-text" class="logo-title">Catálogo Online</span>
   </a>
-  <span class="tagline" id="tagline">The Smash Master</span>
+  <span class="tagline" id="tagline">Tu tienda digital</span>
 
   <div class="search-wrap">
     <i class="bi bi-search search-icon" aria-hidden="true"></i>
     <input type="text" class="search-input" id="search"
-      placeholder="Buscar smash burgers, combos..."
+      placeholder="Buscar productos en el catálogo..."
       aria-label="Buscar productos en el catálogo"
       oninput="onSearch(this.value); syncSearchMobile(this.value);"/>
   </div>
@@ -1748,8 +1748,8 @@ body:not(.light-theme) .stock-chip {
           <img id="hero-avatar-img" alt="Logo de la tienda" style="display:none;" />
         </div>
         <div class="hero-brand-info">
-          <span class="hero-brand-name" id="hero-brand-name">BigHouse</span>
-          <span class="hero-brand-tagline" id="hero-brand-tagline">The Smash Master</span>
+          <span class="hero-brand-name" id="hero-brand-name">Catálogo Online</span>
+          <span class="hero-brand-tagline" id="hero-brand-tagline">Tu tienda digital</span>
         </div>
       </div>
       <div class="hero-title" id="hero-title">Bienvenidos a<br/><span id="hero-title-span">nuestra tienda.</span></div>
@@ -2128,6 +2128,114 @@ if (detectedStore) {
   if (dsLow === 'bighouseburger' || dsLow === 'bighouseburgers') detectedStore = 'bighouse';
 }
 const STORE_ID = detectedStore.toLowerCase();
+
+/* ═══════════════════════════════════════════ UNIVERSAL STORE BRANDING SYNC */
+function syncStoreBranding(c = {}) {
+  const detectedId = typeof STORE_ID !== 'undefined' ? STORE_ID : '';
+  const prettyFallback = detectedId && detectedId !== 'demo' ? detectedId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Dale! Te Pido';
+  const store = c.name || (typeof CFG !== 'undefined' && CFG.name) || prettyFallback;
+  const tag = c.tagline || (typeof CFG !== 'undefined' && CFG.tagline) || 'Tu catálogo digital interactivo';
+  const logo = c.logo || c.logo_url || (typeof CFG !== 'undefined' && (CFG.logo || CFG.logo_url)) || '';
+  const emoji = c.emoji || (typeof CFG !== 'undefined' && CFG.emoji) || (detectedId === 'ferre-now' ? '🛠️' : (detectedId === 'bighouse' ? '🍔' : '🏪'));
+  
+  const storeIdKey = detectedId ? '_' + detectedId : '';
+  const storedHeroImg = (storeIdKey ? localStorage.getItem('storeapp_hero_img' + storeIdKey) : null) || localStorage.getItem('storeapp_hero_img') || '';
+  const storedHeroMobileImg = (storeIdKey ? localStorage.getItem('storeapp_hero_mobile_img' + storeIdKey) : null) || localStorage.getItem('storeapp_hero_mobile_img') || '';
+
+  const bg = (c.bg !== undefined && c.bg !== null ? c.bg : ((typeof CFG !== 'undefined' && CFG.bg) || storedHeroImg || '')).trim();
+  const mobileBg = (c.bannerMobileImg !== undefined && c.bannerMobileImg !== null ? c.bannerMobileImg : (c.banner_mobile_img || (typeof CFG !== 'undefined' && (CFG.bannerMobileImg || CFG.banner_mobile_img)) || storedHeroMobileImg || '')).trim();
+  const heroBgColor = c.heroBgColor || (typeof CFG !== 'undefined' && CFG.heroBgColor) || '#0E0E0E';
+  const heroImgOpacity = (c.heroImgOpacity != null ? Number(c.heroImgOpacity) : (typeof CFG !== 'undefined' && CFG.heroImgOpacity != null ? Number(CFG.heroImgOpacity) : 100)) / 100;
+  const heroOverlay = c.heroOverlay || (typeof CFG !== 'undefined' && CFG.heroOverlay) || 'rgba(0,0,0,.48)';
+
+  // Topbar
+  const logoTextEl = document.getElementById('logo-text');
+  const logoIconEl = document.getElementById('logo-icon');
+  const logoImgEl = document.getElementById('logo-img');
+  const taglineEl = document.getElementById('tagline');
+  const searchEl = document.getElementById('search');
+  const searchMobileEl = document.getElementById('search-mobile');
+
+  if (logoTextEl) logoTextEl.textContent = store;
+  if (taglineEl) taglineEl.textContent = tag;
+  if (searchEl && !searchEl.value) searchEl.placeholder = `Buscar en ${store}...`;
+  if (searchMobileEl && !searchMobileEl.value) searchMobileEl.placeholder = `Buscar en ${store}...`;
+
+  if (logo && logoImgEl) {
+    logoImgEl.onerror = function() {
+      this.style.display = 'none';
+      if (logoIconEl) {
+        logoIconEl.textContent = emoji;
+        logoIconEl.style.display = 'flex';
+      }
+    };
+    logoImgEl.src = optimizeImg(logo, 80, 80);
+    logoImgEl.style.display = 'block';
+    if (logoIconEl) logoIconEl.style.display = 'none';
+  } else if (logoIconEl) {
+    logoIconEl.textContent = emoji;
+    logoIconEl.style.display = 'flex';
+    if (logoImgEl) logoImgEl.style.display = 'none';
+  }
+
+  // Hero Brand Card
+  const heroBrandNameEl = document.getElementById('hero-brand-name');
+  const heroBrandTaglineEl = document.getElementById('hero-brand-tagline');
+  const heroAvatarImgEl = document.getElementById('hero-avatar-img');
+  const heroAvatarEmojiEl = document.getElementById('hero-avatar-emoji');
+
+  if (heroBrandNameEl) heroBrandNameEl.textContent = store;
+  if (heroBrandTaglineEl) heroBrandTaglineEl.textContent = tag;
+
+  if (logo && heroAvatarImgEl) {
+    heroAvatarImgEl.onerror = function() {
+      this.style.display = 'none';
+      if (heroAvatarEmojiEl) {
+        heroAvatarEmojiEl.textContent = emoji;
+        heroAvatarEmojiEl.style.display = 'block';
+      }
+    };
+    heroAvatarImgEl.src = optimizeImg(logo, 120, 120);
+    heroAvatarImgEl.style.display = 'block';
+    if (heroAvatarEmojiEl) heroAvatarEmojiEl.style.display = 'none';
+  } else if (heroAvatarEmojiEl) {
+    heroAvatarEmojiEl.textContent = emoji;
+    heroAvatarEmojiEl.style.display = 'block';
+    if (heroAvatarImgEl) heroAvatarImgEl.style.display = 'none';
+  }
+
+  // Hero Cover Background
+  const heroEl = document.getElementById('hero');
+  const heroBgEl = document.getElementById('hero-img-bg');
+  const heroOverlayEl = document.getElementById('hero-overlay');
+  const heroStripesEl = document.getElementById('hero-stripes');
+
+  if (heroEl) heroEl.style.backgroundColor = heroBgColor;
+
+  if (mobileBg) {
+    document.documentElement.style.setProperty('--hero-bg-mobile', `url('${optimizeImg(mobileBg, 800)}')`);
+    if (heroBgEl) heroBgEl.classList.add('has-mobile-bg');
+  } else {
+    if (heroBgEl) heroBgEl.classList.remove('has-mobile-bg');
+  }
+
+  if (bg && heroBgEl) {
+    heroBgEl.style.backgroundImage = `url('${optimizeImg(bg, 1200)}')`;
+    heroBgEl.style.opacity = heroImgOpacity.toString();
+    if (heroStripesEl) heroStripesEl.style.display = 'none';
+    if (heroOverlayEl) heroOverlayEl.style.background = heroOverlay;
+  } else {
+    if (heroBgEl && !mobileBg) {
+      heroBgEl.style.backgroundImage = 'none';
+      heroBgEl.style.opacity = '0';
+    }
+    if (heroStripesEl) heroStripesEl.style.display = 'none';
+    if (heroOverlayEl) heroOverlayEl.style.background = 'transparent';
+  }
+}
+window.syncStoreBranding = syncStoreBranding;
+
+try { syncStoreBranding(); } catch(e) {}
 localStorage.setItem('storeapp_store_id', STORE_ID);
 
 // Load config saved by dashboard
@@ -2647,17 +2755,17 @@ async function loadSheet() {
         if (storedBanners) localBannerData = JSON.parse(storedBanners);
       } catch(e) {}
 
-      CFG.h1 = cfg.h1 != null ? cfg.h1 : (parsedDesign.h1 || CFG.h1 || '');
-      CFG.h2 = cfg.h2 != null ? cfg.h2 : (parsedDesign.h2 || CFG.h2 || '');
-      CFG.desc = cfg.desc != null ? cfg.desc : (parsedDesign.desc || CFG.desc || '');
+      CFG.h1 = (parsedDesign.h1 && parsedDesign.h1.trim()) || (cfg.h1 && cfg.h1.trim()) || CFG.h1 || '';
+      CFG.h2 = (parsedDesign.h2 && parsedDesign.h2.trim()) || (cfg.h2 && cfg.h2.trim()) || CFG.h2 || '';
+      CFG.desc = (parsedDesign.desc && parsedDesign.desc.trim()) || (cfg.desc && cfg.desc.trim()) || CFG.desc || '';
       CFG.h1Color = parsedDesign.h1Color || CFG.h1Color || '#FFFFFF';
       CFG.h2Color = parsedDesign.h2Color || CFG.h2Color || '';
       CFG.descColor = parsedDesign.descColor || CFG.descColor || '#E0E0E0';
-      CFG.bannerMobileImg = parsedDesign.banner_mobile_img || parsedDesign.bannerMobileImg || CFG.bannerMobileImg || '';
-      CFG.emoji = cfg.emoji != null ? cfg.emoji : (parsedDesign.emoji || CFG.emoji || '🏪');
-      CFG.theme = cfg.theme != null ? cfg.theme : (parsedDesign.theme || CFG.theme || 'dark');
-      CFG.font = cfg.font != null ? cfg.font : (parsedDesign.font || CFG.font || '');
-      CFG.fontBody = cfg.font_body != null ? cfg.font_body : (parsedDesign.font_body || parsedDesign.fontBody || CFG.fontBody || '');
+      CFG.bannerMobileImg = (parsedDesign.banner_mobile_img || parsedDesign.bannerMobileImg || '').trim() || (cfg.banner_mobile_img || '').trim() || CFG.bannerMobileImg || '';
+      CFG.emoji = (parsedDesign.emoji && parsedDesign.emoji.trim()) || (cfg.emoji && cfg.emoji.trim()) || CFG.emoji || '🏪';
+      CFG.theme = (parsedDesign.theme && parsedDesign.theme.trim()) || (cfg.theme && cfg.theme.trim()) || CFG.theme || 'dark';
+      CFG.font = (parsedDesign.font && parsedDesign.font.trim()) || (cfg.font && cfg.font.trim()) || CFG.font || '';
+      CFG.fontBody = (parsedDesign.font_body || parsedDesign.fontBody || cfg.font_body || '').trim() || CFG.fontBody || '';
       const bStyle = parsedDesign.brand_style || cfg.brand_style;
       if (bStyle) {
         CFG.brandStyle = bStyle;
@@ -2668,8 +2776,7 @@ async function loadSheet() {
           else if (bStyle === 'minimalista') { CFG.font = 'Inter'; CFG.fontBody = 'Inter'; }
         }
       }
-      CFG.bg = cfg.bg != null ? cfg.bg : (parsedDesign.bg || CFG.bg || '');
-      CFG.bannerMobileImg = parsedDesign.banner_mobile_img || parsedDesign.bannerMobileImg || CFG.bannerMobileImg || '';
+      CFG.bg = (parsedDesign.bg && parsedDesign.bg.trim()) || (cfg.bg && cfg.bg.trim()) || CFG.bg || '';
       if (CFG.bg) {
         try { localStorage.setItem('storeapp_hero_img_' + STORE_ID, CFG.bg); } catch(e) {}
       } else {
@@ -2683,6 +2790,7 @@ async function loadSheet() {
       CFG.logo = cfg.logo_url || parsedDesign.logo || CFG.logo || '';
       CFG.heroBgColor = parsedDesign.heroBgColor || CFG.heroBgColor || '#0E0E0E';
       CFG.heroImgOpacity = parsedDesign.heroImgOpacity != null ? Number(parsedDesign.heroImgOpacity) : (CFG.heroImgOpacity != null ? Number(CFG.heroImgOpacity) : 100);
+      CFG.heroOverlay = parsedDesign.heroOverlay || CFG.heroOverlay || 'rgba(0,0,0,.48)';
 
       // Modo Sereno / Horarios
       if (cfg.night_guard_enabled != null) {
@@ -4948,8 +5056,8 @@ function applyStoredConfig() {
   const storeIdKey = typeof STORE_ID !== 'undefined' && STORE_ID ? `_${STORE_ID}` : '';
   const storedHeroImg = (storeIdKey ? localStorage.getItem(`storeapp_hero_img${storeIdKey}`) : null) || localStorage.getItem('storeapp_hero_img') || '';
   const storedHeroMobileImg = (storeIdKey ? localStorage.getItem(`storeapp_hero_mobile_img${storeIdKey}`) : null) || localStorage.getItem('storeapp_hero_mobile_img') || '';
-  const heroImgUrl = (CFG.bg !== undefined && CFG.bg !== null ? CFG.bg : (cfg.bg || storedHeroImg || '')).trim();
-  const heroMobileImgUrl = (CFG.bannerMobileImg !== undefined && CFG.bannerMobileImg !== null ? CFG.bannerMobileImg : (cfg.banner_mobile_img || storedHeroMobileImg || '')).trim();
+  const heroImgUrl = (CFG.bg || cfg.bg || storedHeroImg || '').trim();
+  const heroMobileImgUrl = (CFG.bannerMobileImg || cfg.banner_mobile_img || storedHeroMobileImg || '').trim();
   const heroBgColor = cfg.heroBgColor || CFG.heroBgColor || '#0E0E0E';
   const heroImgOpacity = (cfg.heroImgOpacity != null ? Number(cfg.heroImgOpacity) : (CFG.heroImgOpacity != null ? Number(CFG.heroImgOpacity) : 100)) / 100;
 
@@ -5050,6 +5158,7 @@ function applyStoredConfig() {
       }
     } catch(e) {}
   }
+  syncStoreBranding(cfg);
   if (typeof updateStoreScheduleUI === 'function') updateStoreScheduleUI();
 }
 

@@ -480,6 +480,13 @@ a.logo{
   background-position:center;
   background-repeat:no-repeat;
   transition:opacity .3s;
+  z-index:1;
+}
+.hero-overlay{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,.45);
+  pointer-events:none;
+  z-index:2;
 }
 /* Dark overlay — always on top of image */
 .hero-overlay{
@@ -1516,6 +1523,114 @@ const getStoreId = () => {
 };
 
 const STORE_ID = getStoreId();
+
+/* ═══════════════════════════════════════════ UNIVERSAL STORE BRANDING SYNC */
+function syncStoreBranding(c = {}) {
+  const detectedId = typeof STORE_ID !== 'undefined' ? STORE_ID : '';
+  const prettyFallback = detectedId && detectedId !== 'demo' ? detectedId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Dale! Te Pido';
+  const store = c.name || (typeof CFG !== 'undefined' && CFG.name) || prettyFallback;
+  const tag = c.tagline || (typeof CFG !== 'undefined' && CFG.tagline) || 'Tu catálogo digital interactivo';
+  const logo = c.logo || c.logo_url || (typeof CFG !== 'undefined' && (CFG.logo || CFG.logo_url)) || '';
+  const emoji = c.emoji || (typeof CFG !== 'undefined' && CFG.emoji) || (detectedId === 'ferre-now' ? '🛠️' : (detectedId === 'bighouse' ? '🍔' : '🏪'));
+  
+  const storeIdKey = detectedId ? '_' + detectedId : '';
+  const storedHeroImg = (storeIdKey ? localStorage.getItem('storeapp_hero_img' + storeIdKey) : null) || localStorage.getItem('storeapp_hero_img') || '';
+  const storedHeroMobileImg = (storeIdKey ? localStorage.getItem('storeapp_hero_mobile_img' + storeIdKey) : null) || localStorage.getItem('storeapp_hero_mobile_img') || '';
+
+  const bg = (c.bg !== undefined && c.bg !== null ? c.bg : ((typeof CFG !== 'undefined' && CFG.bg) || storedHeroImg || '')).trim();
+  const mobileBg = (c.bannerMobileImg !== undefined && c.bannerMobileImg !== null ? c.bannerMobileImg : (c.banner_mobile_img || (typeof CFG !== 'undefined' && (CFG.bannerMobileImg || CFG.banner_mobile_img)) || storedHeroMobileImg || '')).trim();
+  const heroBgColor = c.heroBgColor || (typeof CFG !== 'undefined' && CFG.heroBgColor) || '#0E0E0E';
+  const heroImgOpacity = (c.heroImgOpacity != null ? Number(c.heroImgOpacity) : (typeof CFG !== 'undefined' && CFG.heroImgOpacity != null ? Number(CFG.heroImgOpacity) : 100)) / 100;
+  const heroOverlay = c.heroOverlay || (typeof CFG !== 'undefined' && CFG.heroOverlay) || 'rgba(0,0,0,.48)';
+
+  // Topbar
+  const logoTextEl = document.getElementById('logo-text');
+  const logoIconEl = document.getElementById('logo-icon');
+  const logoImgEl = document.getElementById('logo-img');
+  const taglineEl = document.getElementById('tagline');
+  const searchEl = document.getElementById('search');
+  const searchMobileEl = document.getElementById('search-mobile');
+
+  if (logoTextEl) logoTextEl.textContent = store;
+  if (taglineEl) taglineEl.textContent = tag;
+  if (searchEl && !searchEl.value) searchEl.placeholder = `Buscar en ${store}...`;
+  if (searchMobileEl && !searchMobileEl.value) searchMobileEl.placeholder = `Buscar en ${store}...`;
+
+  if (logo && logoImgEl) {
+    logoImgEl.onerror = function() {
+      this.style.display = 'none';
+      if (logoIconEl) {
+        logoIconEl.textContent = emoji;
+        logoIconEl.style.display = 'flex';
+      }
+    };
+    logoImgEl.src = optimizeImg(logo, 80, 80);
+    logoImgEl.style.display = 'block';
+    if (logoIconEl) logoIconEl.style.display = 'none';
+  } else if (logoIconEl) {
+    logoIconEl.textContent = emoji;
+    logoIconEl.style.display = 'flex';
+    if (logoImgEl) logoImgEl.style.display = 'none';
+  }
+
+  // Hero Brand Card
+  const heroBrandNameEl = document.getElementById('hero-brand-name');
+  const heroBrandTaglineEl = document.getElementById('hero-brand-tagline');
+  const heroAvatarImgEl = document.getElementById('hero-avatar-img');
+  const heroAvatarEmojiEl = document.getElementById('hero-avatar-emoji');
+
+  if (heroBrandNameEl) heroBrandNameEl.textContent = store;
+  if (heroBrandTaglineEl) heroBrandTaglineEl.textContent = tag;
+
+  if (logo && heroAvatarImgEl) {
+    heroAvatarImgEl.onerror = function() {
+      this.style.display = 'none';
+      if (heroAvatarEmojiEl) {
+        heroAvatarEmojiEl.textContent = emoji;
+        heroAvatarEmojiEl.style.display = 'block';
+      }
+    };
+    heroAvatarImgEl.src = optimizeImg(logo, 120, 120);
+    heroAvatarImgEl.style.display = 'block';
+    if (heroAvatarEmojiEl) heroAvatarEmojiEl.style.display = 'none';
+  } else if (heroAvatarEmojiEl) {
+    heroAvatarEmojiEl.textContent = emoji;
+    heroAvatarEmojiEl.style.display = 'block';
+    if (heroAvatarImgEl) heroAvatarImgEl.style.display = 'none';
+  }
+
+  // Hero Cover Background
+  const heroEl = document.getElementById('hero');
+  const heroBgEl = document.getElementById('hero-img-bg');
+  const heroOverlayEl = document.getElementById('hero-overlay');
+  const heroStripesEl = document.getElementById('hero-stripes');
+
+  if (heroEl) heroEl.style.backgroundColor = heroBgColor;
+
+  if (mobileBg) {
+    document.documentElement.style.setProperty('--hero-bg-mobile', `url('${optimizeImg(mobileBg, 800)}')`);
+    if (heroBgEl) heroBgEl.classList.add('has-mobile-bg');
+  } else {
+    if (heroBgEl) heroBgEl.classList.remove('has-mobile-bg');
+  }
+
+  if (bg && heroBgEl) {
+    heroBgEl.style.backgroundImage = `url('${optimizeImg(bg, 1200)}')`;
+    heroBgEl.style.opacity = heroImgOpacity.toString();
+    if (heroStripesEl) heroStripesEl.style.display = 'none';
+    if (heroOverlayEl) heroOverlayEl.style.background = heroOverlay;
+  } else {
+    if (heroBgEl && !mobileBg) {
+      heroBgEl.style.backgroundImage = 'none';
+      heroBgEl.style.opacity = '0';
+    }
+    if (heroStripesEl) heroStripesEl.style.display = 'none';
+    if (heroOverlayEl) heroOverlayEl.style.background = 'transparent';
+  }
+}
+window.syncStoreBranding = syncStoreBranding;
+
+try { syncStoreBranding(); } catch(e) {}
 localStorage.setItem('storeapp_store_id', STORE_ID);
 
 // Load config saved by dashboard
@@ -3051,7 +3166,7 @@ function applyStoredConfig() {
   const heroStripes = document.getElementById('hero-stripes');
   const storeIdKey = typeof STORE_ID !== 'undefined' && STORE_ID ? `_${STORE_ID}` : '';
   const storedHeroImg = (storeIdKey ? localStorage.getItem(`storeapp_hero_img${storeIdKey}`) : null) || localStorage.getItem('storeapp_hero_img') || '';
-  const heroImgUrl = (typeof CFG !== 'undefined' && CFG.bg !== undefined && CFG.bg !== null ? CFG.bg : (cfg.bg || storedHeroImg || '')).trim();
+  const heroImgUrl = ((typeof CFG !== 'undefined' && CFG.bg) || cfg.bg || storedHeroImg || '').trim();
   if (heroImgUrl && heroBg) {
     // Dynamic LCP preload optimization for PageSpeed
     const link = document.createElement('link');
